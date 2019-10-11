@@ -8,13 +8,13 @@ class ExportAssociation :
 	public sub_objects::SubObject
 {
 public:
-	ExportAssociation(std::vector<std::wstring>& exportNames, D3D12_STATE_SUBOBJECT& subobjectToAssociation);
+	ExportAssociation(std::vector<std::wstring>& exportNames, const D3D12_STATE_SUBOBJECT& subobjectToAssociation);
 	~ExportAssociation();
 
 	D3D12_STATE_SUBOBJECT Get() const;
 
 	//exportNamesÇÕstateobjectÇçÏê¨Ç∑ÇÈÇ‹Ç≈ï€éùÇ∑ÇÈÇ±Ç∆
-	void Init(std::vector<std::wstring>& exportNames, D3D12_STATE_SUBOBJECT& subobjectToAssociation);
+	void Init(std::vector<std::wstring>& exportNames, const D3D12_STATE_SUBOBJECT& subobjectToAssociation);
 private:
 	D3D12_STATE_SUBOBJECT mSubObject;
 	D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION mAssociation;

@@ -87,7 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Helper\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Helper\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +130,8 @@
     <ClCompile Include="AccelerationStructure\AccelerationStructure.cpp" />
     <ClCompile Include="Helper\CharConvert.cpp" />
     <ClCompile Include="Helper\D3DCreateHelper.cpp" />
+    <ClCompile Include="RtPipelineState.cpp" />
+    <ClCompile Include="ShaderTable.cpp" />
     <ClCompile Include="Shader\DirectXCompiler.cpp" />
     <ClCompile Include="Shader\DxilEntryPoints.cpp" />
     <ClCompile Include="SubObjects\ExportAssociation.cpp" />
@@ -161,6 +163,8 @@
     <ClInclude Include="Helper\CharConvert.h" />
     <ClInclude Include="Helper\Comptr.h" />
     <ClInclude Include="Helper\D3DCreateHelper.h" />
+    <ClInclude Include="RtPipelineState.h" />
+    <ClInclude Include="ShaderTable.h" />
     <ClInclude Include="Shader\DirectXCompiler.h" />
     <ClInclude Include="Shader\DxilEntryPoints.h" />
     <ClInclude Include="SubObjects\ExportAssociation.h" />

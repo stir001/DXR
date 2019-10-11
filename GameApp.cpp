@@ -6,9 +6,9 @@
 #include <dxgi1_6.h>
 #include <string>
 #include <vector>
-#include "Comptr.h"
-#include "DirectXCompiler.h"
-#include "DxilEntryPoints.h"
+#include "Helper/Comptr.h"
+#include "Shader/DirectXCompiler.h"
+#include "Shader/DxilEntryPoints.h"
 #include "D3DCreateHelper.h"
 
 const std::wstring SHADER_PATH = L"RGShader.hlsl";

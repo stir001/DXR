@@ -1,6 +1,6 @@
 #include "ExportAssociation.h"
 
-ExportAssociation::ExportAssociation(std::vector<std::wstring>& exportNames, D3D12_STATE_SUBOBJECT& subobjectToAssociation)
+ExportAssociation::ExportAssociation(std::vector<std::wstring>& exportNames, const D3D12_STATE_SUBOBJECT& subobjectToAssociation)
 {
 	Init(exportNames,subobjectToAssociation);
 }
@@ -14,7 +14,7 @@ D3D12_STATE_SUBOBJECT ExportAssociation::Get() const
 	return mSubObject;
 }
 
-void ExportAssociation::Init(std::vector<std::wstring>& exportNames, D3D12_STATE_SUBOBJECT& subobjectToAssociation)
+void ExportAssociation::Init(std::vector<std::wstring>& exportNames, const D3D12_STATE_SUBOBJECT& subobjectToAssociation)
 {
 	const unsigned int nameCount = static_cast<unsigned int>(exportNames.size());
 	mNames.resize(nameCount);
