@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,6 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,23 +127,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AccelerationStructure.cpp" />
-    <ClCompile Include="CharConvert.cpp" />
-    <ClCompile Include="D3DCreateHelper.cpp" />
-    <ClCompile Include="DirectXCompiler.cpp" />
-    <ClCompile Include="DxilEntryPoints.cpp" />
-    <ClCompile Include="ExportAssociation.cpp" />
+    <ClCompile Include="AccelerationStructure\AccelerationStructure.cpp" />
+    <ClCompile Include="Helper\CharConvert.cpp" />
+    <ClCompile Include="Helper\D3DCreateHelper.cpp" />
+    <ClCompile Include="Shader\DirectXCompiler.cpp" />
+    <ClCompile Include="Shader\DxilEntryPoints.cpp" />
+    <ClCompile Include="SubObjects\ExportAssociation.cpp" />
     <ClCompile Include="GameApp.cpp" />
-    <ClCompile Include="HitShaders.cpp" />
+    <ClCompile Include="SubObjects\HitShaders.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="RtPielineConfig.cpp" />
-    <ClCompile Include="RtRootSignature.cpp" />
-    <ClCompile Include="ShaderConfig.cpp" />
-    <ClCompile Include="SubObject.cpp" />
-    <ClCompile Include="SubObjectsCreat.cpp" />
+    <ClCompile Include="SubObjects\RtPielineConfig.cpp" />
+    <ClCompile Include="SubObjects\RtRootSignature.cpp" />
+    <ClCompile Include="SubObjects\ShaderConfig.cpp" />
+    <ClCompile Include="SubObjects\SubObject.cpp" />
+    <ClCompile Include="SubObjects\SubObjectsCreate.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="RGShader.hlsl">
+    <FxCompile Include="hlsl\RGShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Library</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -155,20 +157,20 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AccelerationStructure.h" />
-    <ClInclude Include="CharConvert.h" />
-    <ClInclude Include="Comptr.h" />
-    <ClInclude Include="D3DCreateHelper.h" />
-    <ClInclude Include="DirectXCompiler.h" />
-    <ClInclude Include="DxilEntryPoints.h" />
-    <ClInclude Include="ExportAssociation.h" />
+    <ClInclude Include="AccelerationStructure\AccelerationStructure.h" />
+    <ClInclude Include="Helper\CharConvert.h" />
+    <ClInclude Include="Helper\Comptr.h" />
+    <ClInclude Include="Helper\D3DCreateHelper.h" />
+    <ClInclude Include="Shader\DirectXCompiler.h" />
+    <ClInclude Include="Shader\DxilEntryPoints.h" />
+    <ClInclude Include="SubObjects\ExportAssociation.h" />
     <ClInclude Include="GameApp.h" />
-    <ClInclude Include="HitShaders.h" />
-    <ClInclude Include="RtPielineConfig.h" />
-    <ClInclude Include="RtRootSignature.h" />
-    <ClInclude Include="ShaderConfig.h" />
-    <ClInclude Include="SubObject.h" />
-    <ClInclude Include="SubObjectsCreate.h" />
+    <ClInclude Include="SubObjects\HitShaders.h" />
+    <ClInclude Include="SubObjects\RtPielineConfig.h" />
+    <ClInclude Include="SubObjects\RtRootSignature.h" />
+    <ClInclude Include="SubObjects\ShaderConfig.h" />
+    <ClInclude Include="SubObjects\SubObject.h" />
+    <ClInclude Include="SubObjects\SubObjectsCreate.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

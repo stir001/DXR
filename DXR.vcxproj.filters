@@ -39,92 +39,92 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="AccelerationStructure.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="SubObject.cpp">
-      <Filter>ソース ファイル\SubObject</Filter>
-    </ClCompile>
-    <ClCompile Include="SubObjectsCreat.cpp">
-      <Filter>ソース ファイル\SubObject</Filter>
-    </ClCompile>
-    <ClCompile Include="HitShaders.cpp">
-      <Filter>ソース ファイル\SubObject</Filter>
-    </ClCompile>
-    <ClCompile Include="ExportAssociation.cpp">
-      <Filter>ソース ファイル\SubObject</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DCreateHelper.cpp">
-      <Filter>ソース ファイル\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderConfig.cpp">
-      <Filter>ソース ファイル\SubObject</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectXCompiler.cpp">
-      <Filter>ソース ファイル\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="DxilEntryPoints.cpp">
-      <Filter>ソース ファイル\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="CharConvert.cpp">
-      <Filter>ソース ファイル\Helper</Filter>
-    </ClCompile>
     <ClCompile Include="GameApp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="RtPielineConfig.cpp">
+    <ClCompile Include="SubObjects\ExportAssociation.cpp">
       <Filter>ソース ファイル\SubObject</Filter>
     </ClCompile>
-    <ClCompile Include="RtRootSignature.cpp">
+    <ClCompile Include="Helper\CharConvert.cpp">
+      <Filter>ソース ファイル\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper\D3DCreateHelper.cpp">
+      <Filter>ソース ファイル\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\DirectXCompiler.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\DxilEntryPoints.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\HitShaders.cpp">
       <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\RtPielineConfig.cpp">
+      <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\RtRootSignature.cpp">
+      <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\ShaderConfig.cpp">
+      <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\SubObject.cpp">
+      <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\SubObjectsCreate.cpp">
+      <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AccelerationStructure\AccelerationStructure.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SubObject.h">
-      <Filter>ヘッダー ファイル\SubObject</Filter>
-    </ClInclude>
-    <ClInclude Include="SubObjectsCreate.h">
-      <Filter>ヘッダー ファイル\SubObject</Filter>
-    </ClInclude>
-    <ClInclude Include="HitShaders.h">
-      <Filter>ヘッダー ファイル\SubObject</Filter>
-    </ClInclude>
-    <ClInclude Include="ExportAssociation.h">
-      <Filter>ヘッダー ファイル\SubObject</Filter>
-    </ClInclude>
-    <ClInclude Include="D3DCreateHelper.h">
-      <Filter>ヘッダー ファイル\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderConfig.h">
-      <Filter>ヘッダー ファイル\SubObject</Filter>
-    </ClInclude>
-    <ClInclude Include="AccelerationStructure.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXCompiler.h">
-      <Filter>ヘッダー ファイル\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="DxilEntryPoints.h">
-      <Filter>ヘッダー ファイル\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="CharConvert.h">
-      <Filter>ヘッダー ファイル\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Comptr.h">
-      <Filter>ヘッダー ファイル\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="GameApp.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="RtPielineConfig.h">
+    <ClInclude Include="SubObjects\ExportAssociation.h">
       <Filter>ヘッダー ファイル\SubObject</Filter>
     </ClInclude>
-    <ClInclude Include="RtRootSignature.h">
+    <ClInclude Include="Helper\CharConvert.h">
+      <Filter>ヘッダー ファイル\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\Comptr.h">
+      <Filter>ヘッダー ファイル\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\D3DCreateHelper.h">
+      <Filter>ヘッダー ファイル\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\DirectXCompiler.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\DxilEntryPoints.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\HitShaders.h">
       <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\RtPielineConfig.h">
+      <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\RtRootSignature.h">
+      <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\ShaderConfig.h">
+      <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\SubObject.h">
+      <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\SubObjectsCreate.h">
+      <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AccelerationStructure\AccelerationStructure.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="RGShader.hlsl">
+    <FxCompile Include="hlsl\RGShader.hlsl">
       <Filter>ソース ファイル\hlsl</Filter>
     </FxCompile>
   </ItemGroup>
