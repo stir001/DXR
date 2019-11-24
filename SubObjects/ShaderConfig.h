@@ -8,7 +8,7 @@ public:
 	ShaderConfig(const unsigned int maxAttributeByte, const unsigned int maxPayloadByte);
 	~ShaderConfig();
 	void Init(const unsigned int maxAttributeByte, const unsigned int maxPayloadByte);
-	D3D12_STATE_SUBOBJECT Get() const;
+	const D3D12_STATE_SUBOBJECT& Get() const;
 private:
 	D3D12_STATE_SUBOBJECT mSubObject;
 	D3D12_RAYTRACING_SHADER_CONFIG mConfig;

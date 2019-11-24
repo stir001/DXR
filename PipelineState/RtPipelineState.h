@@ -17,7 +17,7 @@ public:
 	RtPipelineState();
 	~RtPipelineState();
 
-	void AddSubObject(const std::shared_ptr<sub_objects::SubObject>& subObject);
+	unsigned int AddSubObject(const std::shared_ptr<sub_objects::SubObject>& subObject);
 	void CreatePipelineState(const MWCptr<ID3D12Device5>& device);
 	const D3D12_STATE_SUBOBJECT& GetSubObject(unsigned int index) const;
 	MWCptr<ID3D12StateObject> GetPipelineState() const;
@@ -26,6 +26,7 @@ public:
 private:
 	MWCptr<ID3D12StateObject> mPipelineState;
 	std::vector<D3D12_STATE_SUBOBJECT> mSubObjects;
+	std::vector<std::shared_ptr<sub_objects::SubObject>> mSubs;
 	unsigned int mIndex;
 };
 

@@ -19,7 +19,7 @@ void ShaderConfig::Init(const unsigned int maxAttributeByte, const unsigned int 
 	mSubObject.pDesc = &mConfig;
 }
 
-D3D12_STATE_SUBOBJECT ShaderConfig::Get() const
+const D3D12_STATE_SUBOBJECT& ShaderConfig::Get() const
 {
 	return mSubObject;
 }

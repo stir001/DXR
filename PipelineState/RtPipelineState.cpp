@@ -12,20 +12,28 @@ RtPipelineState::~RtPipelineState()
 {
 }
 
-void RtPipelineState::AddSubObject(const std::shared_ptr<sub_objects::SubObject>& subObject)
+unsigned int RtPipelineState::AddSubObject(const std::shared_ptr<sub_objects::SubObject>& subObject)
 {
-	mSubObjects.push_back(subObject->Get());
-	++mIndex;
+	mSubs.push_back(subObject);
+	//mSubObjects.push_back(subObject->Get());
+	return mIndex++;
 }
 
 void RtPipelineState::CreatePipelineState(const MWCptr<ID3D12Device5>& device)
 {
+	mSubObjects.resize(mIndex);
+	for (int i = 0; i < mIndex; ++i)
+	{
+		mSubs[i]->Create(*this);
+		mSubObjects[i] = mSubs[i]->Get();
+	}
+
 	D3D12_STATE_OBJECT_DESC desc;
 	desc.NumSubobjects = mIndex;
 	desc.pSubobjects = mSubObjects.data();
 	desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
 
-	d3d_create_helper::D3DError(device->CreateStateObject(&desc, IID_PPV_ARGS(&mPipelineState)));
+	d3d_create_helper::D3DError(device->CreateStateObject(&desc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
 }
 
 const D3D12_STATE_SUBOBJECT& RtPipelineState::GetSubObject(unsigned int index) const

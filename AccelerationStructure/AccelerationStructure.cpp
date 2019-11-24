@@ -1,39 +1,46 @@
 #include <d3d12.h>
 #include "AccelerationStructure.h"
+#include "D3DCreateHelper.h"
 
-AccelearationStructure::AccelearationStructure()
+AccelerationStructure::AccelerationStructure()
 {
 }
 
-AccelearationStructure::~AccelearationStructure()
+AccelerationStructure::~AccelerationStructure()
 {
 }
 
-AccelearationStructure::ASBuffer AccelearationStructure::InitTopLevelAS(MWCptr<ID3D12Device5>& device, MWCptr< ID3D12GraphicsCommandList4>& commandList, MWCptr<ID3D12Resource>& bottomLevelAS)
+AccelerationStructure::ASBuffer AccelerationStructure::InitTopLevelAS(const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& commandList, const std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs)
 {
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input = {};
 	input.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;//配列かポインタの配列かを設定できる
-	input.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;//場合によるパフォーマンス向上のためのフラグ
+	input.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;//場合によるパフォーマンス向上のためのフラグ今なしにするが今後は調整対象
 	input.NumDescs = 1;
-	input.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+	input.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info;
 	device->GetRaytracingAccelerationStructurePrebuildInfo(&input, &info);
 
 	ASBuffer asBuffer;
 
-	asBuffer.scratch = nullptr;//CreateBuffer() info.ScratchDataSizeInBytes UA STATE_UA DEFAULT_HEAP
-	asBuffer.result = nullptr;//CreateBuffer() info.ResultDataMaxSizeInBytes UA STATE_AS DEFAULT_HEAP
+	asBuffer.scratch = d3d_create_helper::CreateBuffer(device, info.ScratchDataSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, d3d_create_helper::GetDefaultHeapProps());
+	asBuffer.result = d3d_create_helper::CreateBuffer(device, info.ResultDataMaxSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, d3d_create_helper::GetDefaultHeapProps());//CreateBuffer() info.ResultDataMaxSizeInBytes UA STATE_AS DEFAULT_HEAP
 
-	asBuffer.instanceDesc = nullptr;//CreateBuffer() sizeof(D3D12_RAYTRACING_INSTANCE_DESC) FLAGS_NONE GENERIC_READ UPLOAD_HEAP
+	//CreateBuffer() sizeof(D3D12_RAYTRACING_INSTANCE_DESC) FLAGS_NONE GENERIC_READ UPLOAD_HEAP
+	asBuffer.instanceDesc = d3d_create_helper::CreateBuffer(device, sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * instanceDescs.size(), D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, d3d_create_helper::GetUploadHeapProps());
 	
+	//TODO:インスタンスDescの生成は個別でやるべき？それぞれのモデル情報と関連付けるほうがいいかもしれない
 	D3D12_RAYTRACING_INSTANCE_DESC* instanceDesc;
 	asBuffer.instanceDesc->Map(0, nullptr, reinterpret_cast<void**>(&instanceDesc));
-	instanceDesc->InstanceID = 0;
-	instanceDesc->InstanceContributionToHitGroupIndex = 0;
-	instanceDesc->Transform;//(identityをとりあえず入れる。ただしfloat[3][4]の配列であることに注意
-	instanceDesc->AccelerationStructure = bottomLevelAS->GetGPUVirtualAddress();//256バイトアライメントされたものでないといけない
-	instanceDesc->InstanceMask = 0xff;
+	memcpy(&instanceDesc, instanceDescs.data(), sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * instanceDescs.size());
+
+	//instanceDesc->InstanceID = 0;//shader内での"InstanceID()"関数で出力される値
+	//instanceDesc->InstanceContributionToHitGroupIndex = 0;//shader-tableのオフセットと対応今は固定機能なので0。こは外側で定義すべきか？
+	//instanceDesc->Transform;//(identityをとりあえず入れる。ただしfloat[3][4]の配列であることに注意
+	//instanceDesc->AccelerationStructure = bottomLevelAS->GetGPUVirtualAddress();//256バイトアライメントされたものでないといけない
+	//instanceDesc->InstanceMask = 0xff;
 
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 	asDesc.Inputs = input;
@@ -53,13 +60,13 @@ AccelearationStructure::ASBuffer AccelearationStructure::InitTopLevelAS(MWCptr<I
 	return asBuffer;
 }
 
-AccelearationStructure::ASBuffer AccelearationStructure::InitBottomLevelTriangleAS(MWCptr<ID3D12Device5>& device, MWCptr<ID3D12GraphicsCommandList4>& commandList, const D3D12_RAYTRACING_GEOMETRY_DESC* geometrys, unsigned int geometryCount)
+AccelerationStructure::ASBuffer AccelerationStructure::InitBottomLevelTriangleAS(const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& commandList, const D3D12_RAYTRACING_GEOMETRY_DESC* geometrys, unsigned int geometryCount)
 {
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs;
 	inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;
-	inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
+	inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;//BottomLevelではほとんど変更を行わないようにするためFastTraceフラグを立てる
 	inputs.NumDescs = geometryCount;
-	inputs.pGeometryDescs = geometrys;
+	inputs.pGeometryDescs = geometrys;//マテリアルごとに別々にするのがいい？
 	inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
 
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info = {};
@@ -67,8 +74,11 @@ AccelearationStructure::ASBuffer AccelearationStructure::InitBottomLevelTriangle
 
 	ASBuffer asBuffer;
 
-	asBuffer.scratch = nullptr;//info.ScrathcDataSizeInBytes FLAG_UA STATE_UA HEAP_DEFAULT
-	asBuffer.result = nullptr;//info.ResultDataMaxSizeInBytes FLAG_UA STATE_RAYTRACING_AS HEAP_DEFAULT　256byteアライメントが必須?
+	asBuffer.scratch = d3d_create_helper::CreateBuffer(device, info.ScratchDataSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_COMMON,d3d_create_helper::GetDefaultHeapProps());
+	//info.ResultDataMaxSizeInBytes FLAG_UA STATE_RAYTRACING_AS HEAP_DEFAULT　256byteアライメントが必須?
+	asBuffer.result = d3d_create_helper::CreateBuffer(device, info.ResultDataMaxSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,d3d_create_helper::GetDefaultHeapProps());
 
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 	asDesc.Inputs = inputs;
@@ -86,18 +96,23 @@ AccelearationStructure::ASBuffer AccelearationStructure::InitBottomLevelTriangle
 	return asBuffer;
 }
 
-D3D12_RAYTRACING_GEOMETRY_DESC AccelearationStructure::CreateTriangleGeometryDesc(const TriangleBuffers& buffers, D3D12_RAYTRACING_GEOMETRY_FLAGS& flags)
+D3D12_RAYTRACING_GEOMETRY_DESC AccelerationStructure::CreateTriangleGeometryDesc(const TriangleBuffers& buffers, const D3D12_RAYTRACING_GEOMETRY_FLAGS& flags)
 {
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
+	if (buffers.vertexBuffer == nullptr)
+	{
+		return geometryDesc;
+	}
+	D3D12_GPU_VIRTUAL_ADDRESS indexBufferVirtualAddress = buffers.indexBuffer != nullptr ? buffers.indexBuffer->GetGPUVirtualAddress() : 0;
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDesc.Flags = flags;
 	geometryDesc.Triangles.VertexBuffer.StartAddress = buffers.vertexBuffer->GetGPUVirtualAddress();
 	geometryDesc.Triangles.VertexBuffer.StrideInBytes = buffers.vertexStride;
 	geometryDesc.Triangles.VertexCount = buffers.vertexCount;
 	geometryDesc.Triangles.VertexFormat = buffers.vertexFormat;
-	geometryDesc.Triangles.IndexBuffer = buffers.indexBuffer->GetGPUVirtualAddress();
+	geometryDesc.Triangles.IndexBuffer = indexBufferVirtualAddress;
 	geometryDesc.Triangles.IndexCount = buffers.indexCount;
 	geometryDesc.Triangles.IndexFormat = buffers.indexFormat;
-	geometryDesc.Triangles.Transform3x4;
+	geometryDesc.Triangles.Transform3x4 = 0;//AS作成時に適応するための3x4のアフィン行列を保持したBufferのvirtualAddress nullptr可能
 	return geometryDesc;
 }

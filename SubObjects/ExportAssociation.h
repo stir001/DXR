@@ -8,16 +8,19 @@ class ExportAssociation :
 	public sub_objects::SubObject
 {
 public:
-	ExportAssociation(std::vector<std::wstring>& exportNames, const D3D12_STATE_SUBOBJECT& subobjectToAssociation);
+	ExportAssociation(const std::vector<std::wstring>& exportNames, unsigned int subOjectIndex);
 	~ExportAssociation();
 
-	D3D12_STATE_SUBOBJECT Get() const;
+	const D3D12_STATE_SUBOBJECT& Get() const;
 
 	//exportNamesÇÕstateobjectÇçÏê¨Ç∑ÇÈÇ‹Ç≈ï€éùÇ∑ÇÈÇ±Ç∆
-	void Init(std::vector<std::wstring>& exportNames, const D3D12_STATE_SUBOBJECT& subobjectToAssociation);
+	void Init(const std::vector<std::wstring>& exportNames, unsigned int subOjectIndex);
+	void Create(RtPipelineState& pipelineState);
 private:
+	void SetSubObject(RtPipelineState& pipelineState);
 	D3D12_STATE_SUBOBJECT mSubObject;
 	D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION mAssociation;
 	std::vector<LPCWSTR> mNames;
+	unsigned int mAssociateIndex;
 };
 

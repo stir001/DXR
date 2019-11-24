@@ -60,9 +60,6 @@
     <ClCompile Include="SubObjects\HitShaders.cpp">
       <Filter>ソース ファイル\SubObject</Filter>
     </ClCompile>
-    <ClCompile Include="SubObjects\RtPielineConfig.cpp">
-      <Filter>ソース ファイル\SubObject</Filter>
-    </ClCompile>
     <ClCompile Include="SubObjects\RtRootSignature.cpp">
       <Filter>ソース ファイル\SubObject</Filter>
     </ClCompile>
@@ -78,10 +75,40 @@
     <ClCompile Include="AccelerationStructure\AccelerationStructure.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="RtPipelineState.cpp">
+    <ClCompile Include="PipelineState\RtPipelineState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderTable.cpp">
+    <ClCompile Include="Shader\ShaderTable.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DDescriptorHeap.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTraceRenderer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="InstanceCreator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderResources.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="SubObjects\RtPipelineConfig.cpp">
+      <Filter>ソース ファイル\SubObject</Filter>
+    </ClCompile>
+    <ClCompile Include="RootSignatureDescBundle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DResource.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawObjectCreator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DCommandList.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,9 +137,6 @@
     <ClInclude Include="SubObjects\HitShaders.h">
       <Filter>ヘッダー ファイル\SubObject</Filter>
     </ClInclude>
-    <ClInclude Include="SubObjects\RtPielineConfig.h">
-      <Filter>ヘッダー ファイル\SubObject</Filter>
-    </ClInclude>
     <ClInclude Include="SubObjects\RtRootSignature.h">
       <Filter>ヘッダー ファイル\SubObject</Filter>
     </ClInclude>
@@ -128,10 +152,40 @@
     <ClInclude Include="AccelerationStructure\AccelerationStructure.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="RtPipelineState.h">
+    <ClInclude Include="PipelineState\RtPipelineState.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderTable.h">
+    <ClInclude Include="Shader\ShaderTable.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DDescriptorHeap.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTraceRenderer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="InstanceCreator.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderResources.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SubObjects\RtPipelineConfig.h">
+      <Filter>ヘッダー ファイル\SubObject</Filter>
+    </ClInclude>
+    <ClInclude Include="RootSignatureDescBundle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DResource.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawObjectCreator.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DCommandList.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

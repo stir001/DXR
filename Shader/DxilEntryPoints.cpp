@@ -16,6 +16,11 @@ DxilEntryPoints::~DxilEntryPoints()
 {
 }
 
+const D3D12_STATE_SUBOBJECT& DxilEntryPoints::Get() const
+{
+	return mLibSubObject;
+}
+
 void DxilEntryPoints::SetEntryPoints(std::vector<std::string>& entryPoints, MWCptr<IDxcBlob> blob)
 {
 	std::vector<std::wstring> wEntryPoints;
@@ -32,7 +37,7 @@ void DxilEntryPoints::SetEntryPoints(std::vector<std::wstring>& entryPoints, MWC
 	mShaderBlob = blob;
 	unsigned int entryPointCount = static_cast<unsigned int>(entryPoints.size());
 	mEntryPointNames.resize(entryPointCount);
-	std::copy(mEntryPointNames.begin(), mEntryPointNames.end(), entryPoints.begin());
+	std::copy(entryPoints.begin(), entryPoints.end(), mEntryPointNames.begin());
 	mExportsDesc.resize(entryPointCount);
 	for (unsigned int i = 0; i < entryPointCount; ++i)
 	{
@@ -48,9 +53,4 @@ void DxilEntryPoints::SetEntryPoints(std::vector<std::wstring>& entryPoints, MWC
 
 	mLibSubObject.Type = D3D12_STATE_SUBOBJECT_TYPE::D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;
 	mLibSubObject.pDesc = &mDxilLib;
-}
-
-const D3D12_STATE_SUBOBJECT& DxilEntryPoints::GetDxilLibrary() const
-{
-	return mLibSubObject;
 }
