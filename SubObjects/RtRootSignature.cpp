@@ -8,9 +8,9 @@ RtRootSignature::RtRootSignature(const MWCptr<ID3D12Device5>& device, const D3D1
 }
 
 RtRootSignature::RtRootSignature(const MWCptr<ID3D12RootSignature>& rootSignature, bool isLocal)
-	: mRootSignature(rootSignature)
+	: mRootSignature(rootSignature), mInterface(mRootSignature.Get())
 {
-	mSubObject.pDesc = mRootSignature.Get();
+	mSubObject.pDesc = &mInterface;
 	mSubObject.Type = isLocal ? D3D12_STATE_SUBOBJECT_TYPE_LOCAL_ROOT_SIGNATURE : D3D12_STATE_SUBOBJECT_TYPE_GLOBAL_ROOT_SIGNATURE;
 }
 
@@ -21,7 +21,8 @@ RtRootSignature::~RtRootSignature()
 void RtRootSignature::Init(const MWCptr<ID3D12Device5>& device, const D3D12_ROOT_SIGNATURE_DESC& desc, bool isLocal)
 {
 	mRootSignature = d3d_create_helper::CreateRootSignature(device, desc);
-	mSubObject.pDesc = mRootSignature.GetAddressOf();
+	mInterface = mRootSignature.Get();
+	mSubObject.pDesc = &mInterface;
 	mSubObject.Type = isLocal ? D3D12_STATE_SUBOBJECT_TYPE_LOCAL_ROOT_SIGNATURE : D3D12_STATE_SUBOBJECT_TYPE_GLOBAL_ROOT_SIGNATURE;
 }
 

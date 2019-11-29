@@ -25,8 +25,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
-RaytracingAccelerationStructure gRtScene : register(t0);
 RWTexture2D<float4> gOutput : register(u0);
+RaytracingAccelerationStructure gRtScene : register(t0);
 
 float3 linearToSrgb(float3 c)
 {
@@ -46,6 +46,11 @@ struct RayPayload
 [shader("raygeneration")]
 void rayGen()
 {
+
+	//uint3 launchIndex = DispatchRaysIndex();
+	//float3 col = linearToSrgb(float3(0.4, 0.6, 0.2));
+	//gOutput[launchIndex.xy] = float4(col, 1);
+
 	uint3 launchIndex = DispatchRaysIndex();
 	uint3 launchDim = DispatchRaysDimensions();
 
@@ -64,7 +69,8 @@ void rayGen()
 
 	RayPayload payload;
 	TraceRay(gRtScene, 0 /*rayFlags*/, 0xFF, 0 /* ray index*/, 0, 0, ray, payload);
-	float3 col = linearToSrgb(payload.color);
+	//float3 col = linearToSrgb(payload.color);
+	float3 col = payload.color;
 	gOutput[launchIndex.xy] = float4(col, 1);
 }
 

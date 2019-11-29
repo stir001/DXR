@@ -39,18 +39,18 @@ public:
 	unsigned long long GetShaderTableEntrySize() const;
 	D3D12_GPU_VIRTUAL_ADDRESS GetRayGenTableAddress() const;
 	unsigned int GetRayGenNum() const;
-	D3D12_GPU_VIRTUAL_ADDRESS GetHitGroupTableAddress() const;
-	unsigned int GetHitGroupNum() const;
 	D3D12_GPU_VIRTUAL_ADDRESS GetMissTableAddress() const;
 	unsigned int GetMissNum() const;
+	D3D12_GPU_VIRTUAL_ADDRESS GetHitGroupTableAddress() const;
+	unsigned int GetHitGroupNum() const;
 private:
 	unsigned int GetMaxHeapCount() const;
 	void CreateShaderTable(unsigned int maxHeapCount, const MWCptr<ID3D12Device5>& device);
 	void WriteShaderTable(const std::shared_ptr<RtPipelineState>& pipelineState, const std::shared_ptr<D3DDescriptorHeap>& heap);
 
-	std::vector<ShaderInfo> mHitGroupShaders;
 	std::vector<ShaderInfo> mRayGenShaders;
 	std::vector<ShaderInfo> mMissShaders;
+	std::vector<ShaderInfo> mHitGroupShaders;
 	
 	unsigned long long mEntrySize;
 	MWCptr<ID3D12Resource> mShaderTable;

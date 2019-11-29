@@ -17,5 +17,6 @@ public:
 private:
 	D3D12_STATE_SUBOBJECT mSubObject;
 	MWCptr<ID3D12RootSignature> mRootSignature;
+	ID3D12RootSignature* mInterface;
 };
 

@@ -49,7 +49,7 @@ MWCptr<IDxcBlob> DirectXCompiler::Compile(const std::wstring& shaderPath, const 
 		std::wstring logw;
 		ToWChar(logw, log);
 
-		MessageBox(nullptr, (L"Compiler Error : " + logw).data(), L"ERROR", MB_OK);
+		MessageBox(nullptr, ("Compiler Error : " + log).data(), "ERROR", MB_OK);
 		return 0;
 	}
 
@@ -69,7 +69,7 @@ void DirectXCompiler::Init()
 	}
 	else
 	{
-		MessageBox(nullptr, L"can not find dxcompiler.dll", L"ERROR", MB_OK);
+		MessageBox(nullptr, "can not find dxcompiler.dll", "ERROR", MB_OK);
 		fn = nullptr;
 		return;
 	}
@@ -77,19 +77,19 @@ void DirectXCompiler::Init()
 	HRESULT hr;
 	if (FAILED(hr = fn(CLSID_DxcCompiler, IID_PPV_ARGS(mDxc.GetAddressOf()))))
 	{
-		MessageBox(nullptr, L"create faild : DxcCompiler", L"ERROR", MB_OK);
+		MessageBox(nullptr, "create faild : DxcCompiler", "ERROR", MB_OK);
 		return;
 	}
 
 	if (FAILED(hr = fn(CLSID_DxcLibrary, IID_PPV_ARGS(mLib.GetAddressOf()))))
 	{
-		MessageBox(nullptr, L"create faild : DxcLibrary", L"ERROR", MB_OK);
+		MessageBox(nullptr, "create faild : DxcLibrary", "ERROR", MB_OK);
 		return;
 	}
 
 	if (FAILED(hr = mLib->CreateIncludeHandler(mIncludeHandler.GetAddressOf())))
 	{
-		MessageBox(nullptr, L"create falid : IncludeHandler", L"ERROR", MB_OK);
+		MessageBox(nullptr, "create falid : IncludeHandler", "ERROR", MB_OK);
 		return;
 	}
 }

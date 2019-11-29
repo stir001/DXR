@@ -33,7 +33,9 @@ void RtPipelineState::CreatePipelineState(const MWCptr<ID3D12Device5>& device)
 	desc.pSubobjects = mSubObjects.data();
 	desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
 
-	d3d_create_helper::D3DError(device->CreateStateObject(&desc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+	d3d_create_helper::D3DError(device->CreateStateObject(&desc, IID_PPV_ARGS(&mPipelineState)));
+	//mSubs.clear();
+	//mSubObjects.clear();
 }
 
 const D3D12_STATE_SUBOBJECT& RtPipelineState::GetSubObject(unsigned int index) const
@@ -54,6 +56,7 @@ unsigned int RtPipelineState::GetIndex() const
 void RtPipelineState::Init()
 {
 	mSubObjects.clear();
+	mSubs.clear();
 	mPipelineState = nullptr;
 	mIndex = 0;
 }

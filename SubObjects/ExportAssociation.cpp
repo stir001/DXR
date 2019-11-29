@@ -27,7 +27,8 @@ void ExportAssociation::Init(const std::vector<std::wstring>& exportNames, unsig
 	}
 	mAssociation.NumExports = nameCount;
 	mAssociation.pExports = &mNames[0];
-	//mAssociation.pSubobjectToAssociate = &subobjectToAssociation;
+	//mNamePtr = &mNames[0];
+	//mAssociation.pExports = mNamePtr;
 
 	mSubObject.Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
 	mSubObject.pDesc = &mAssociation;

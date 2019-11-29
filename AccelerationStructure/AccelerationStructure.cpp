@@ -15,7 +15,7 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitTopLevelAS(const MWCp
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input = {};
 	input.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;//配列かポインタの配列かを設定できる
 	input.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;//場合によるパフォーマンス向上のためのフラグ今なしにするが今後は調整対象
-	input.NumDescs = 1;
+	input.NumDescs = instanceDescs.size();
 	input.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info;
@@ -23,24 +23,20 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitTopLevelAS(const MWCp
 
 	ASBuffer asBuffer;
 
-	asBuffer.scratch = d3d_create_helper::CreateBuffer(device, info.ScratchDataSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-		, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, d3d_create_helper::GetDefaultHeapProps());
-	asBuffer.result = d3d_create_helper::CreateBuffer(device, info.ResultDataMaxSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-		, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, d3d_create_helper::GetDefaultHeapProps());//CreateBuffer() info.ResultDataMaxSizeInBytes UA STATE_AS DEFAULT_HEAP
+	asBuffer.scratch = d3d_create_helper::CreateBuffer(device, info.ScratchDataSizeInBytes,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, d3d_create_helper::GetDefaultHeapProps());
+	asBuffer.result = d3d_create_helper::CreateBuffer(device, info.ResultDataMaxSizeInBytes,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, d3d_create_helper::GetDefaultHeapProps());//CreateBuffer() info.ResultDataMaxSizeInBytes UA STATE_AS DEFAULT_HEAP
 
 	//CreateBuffer() sizeof(D3D12_RAYTRACING_INSTANCE_DESC) FLAGS_NONE GENERIC_READ UPLOAD_HEAP
-	asBuffer.instanceDesc = d3d_create_helper::CreateBuffer(device, sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * instanceDescs.size(), D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, d3d_create_helper::GetUploadHeapProps());
+	asBuffer.instanceDesc = d3d_create_helper::CreateBuffer(device, sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * instanceDescs.size(),
+		D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, d3d_create_helper::GetUploadHeapProps());
 	
 	//TODO:インスタンスDescの生成は個別でやるべき？それぞれのモデル情報と関連付けるほうがいいかもしれない
 	D3D12_RAYTRACING_INSTANCE_DESC* instanceDesc;
 	asBuffer.instanceDesc->Map(0, nullptr, reinterpret_cast<void**>(&instanceDesc));
-	memcpy(&instanceDesc, instanceDescs.data(), sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * instanceDescs.size());
-
-	//instanceDesc->InstanceID = 0;//shader内での"InstanceID()"関数で出力される値
-	//instanceDesc->InstanceContributionToHitGroupIndex = 0;//shader-tableのオフセットと対応今は固定機能なので0。こは外側で定義すべきか？
-	//instanceDesc->Transform;//(identityをとりあえず入れる。ただしfloat[3][4]の配列であることに注意
-	//instanceDesc->AccelerationStructure = bottomLevelAS->GetGPUVirtualAddress();//256バイトアライメントされたものでないといけない
-	//instanceDesc->InstanceMask = 0xff;
+	memcpy(instanceDesc, instanceDescs.data(), sizeof(instanceDescs[0]) * instanceDescs.size());
+	asBuffer.instanceDesc->Unmap(0, nullptr);
 
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
 	asDesc.Inputs = input;
@@ -64,7 +60,7 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitBottomLevelTriangleAS
 {
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs;
 	inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;
-	inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;//BottomLevelではほとんど変更を行わないようにするためFastTraceフラグを立てる
+	inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;//BottomLevelではほとんど変更を行わないようにするためFastTraceフラグを立てる
 	inputs.NumDescs = geometryCount;
 	inputs.pGeometryDescs = geometrys;//マテリアルごとに別々にするのがいい？
 	inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
@@ -74,10 +70,12 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitBottomLevelTriangleAS
 
 	ASBuffer asBuffer;
 
-	asBuffer.scratch = d3d_create_helper::CreateBuffer(device, info.ScratchDataSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
-		D3D12_RESOURCE_STATE_COMMON,d3d_create_helper::GetDefaultHeapProps());
+	asBuffer.scratch = d3d_create_helper::CreateBuffer(device, info.ScratchDataSizeInBytes,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS, d3d_create_helper::GetDefaultHeapProps());
 	//info.ResultDataMaxSizeInBytes FLAG_UA STATE_RAYTRACING_AS HEAP_DEFAULT　256byteアライメントが必須?
-	asBuffer.result = d3d_create_helper::CreateBuffer(device, info.ResultDataMaxSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+	asBuffer.result = d3d_create_helper::CreateBuffer(device, info.ResultDataMaxSizeInBytes,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,d3d_create_helper::GetDefaultHeapProps());
 
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};

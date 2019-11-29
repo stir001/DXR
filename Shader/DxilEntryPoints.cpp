@@ -37,7 +37,10 @@ void DxilEntryPoints::SetEntryPoints(std::vector<std::wstring>& entryPoints, MWC
 	mShaderBlob = blob;
 	unsigned int entryPointCount = static_cast<unsigned int>(entryPoints.size());
 	mEntryPointNames.resize(entryPointCount);
-	std::copy(entryPoints.begin(), entryPoints.end(), mEntryPointNames.begin());
+	for (unsigned int i = 0; i < entryPointCount; ++i)
+	{
+		mEntryPointNames[i] = entryPoints[i];
+	}
 	mExportsDesc.resize(entryPointCount);
 	for (unsigned int i = 0; i < entryPointCount; ++i)
 	{
@@ -48,7 +51,7 @@ void DxilEntryPoints::SetEntryPoints(std::vector<std::wstring>& entryPoints, MWC
 
 	mDxilLib.DXILLibrary.pShaderBytecode = mShaderBlob->GetBufferPointer();
 	mDxilLib.DXILLibrary.BytecodeLength = mShaderBlob->GetBufferSize();
-	mDxilLib.NumExports = entryPointCount;
+	mDxilLib.NumExports = mExportsDesc.size();
 	mDxilLib.pExports = mExportsDesc.data();
 
 	mLibSubObject.Type = D3D12_STATE_SUBOBJECT_TYPE::D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;

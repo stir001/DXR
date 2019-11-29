@@ -56,7 +56,7 @@ unsigned int ShaderTable::GetRayGenNum() const
 
 D3D12_GPU_VIRTUAL_ADDRESS ShaderTable::GetHitGroupTableAddress() const
 {
-	return mShaderTable->GetGPUVirtualAddress() + mRayGenShaders.size() * mEntrySize;
+	return mShaderTable->GetGPUVirtualAddress() + (mRayGenShaders.size() + mMissShaders.size()) * mEntrySize;
 }
 
 unsigned int ShaderTable::GetHitGroupNum() const
@@ -66,7 +66,7 @@ unsigned int ShaderTable::GetHitGroupNum() const
 
 D3D12_GPU_VIRTUAL_ADDRESS ShaderTable::GetMissTableAddress() const
 {
-	return mShaderTable->GetGPUVirtualAddress() + (mRayGenShaders.size() + mHitGroupShaders.size()) * mEntrySize;
+	return mShaderTable->GetGPUVirtualAddress() + (mRayGenShaders.size()) * mEntrySize;
 }
 
 unsigned int ShaderTable::GetMissNum() const
@@ -76,20 +76,15 @@ unsigned int ShaderTable::GetMissNum() const
 
 unsigned int ShaderTable::GetMaxHeapCount() const
 {
-	unsigned int heapCount = 0;
-
 	std::function getMaxCount = [](const std::vector<ShaderInfo>& info, unsigned int currentMaxCount)->unsigned int
 	{
 		for (auto& s : info)
 		{
-			for (auto& h : s.heapIndices)
-			{
-				currentMaxCount = currentMaxCount < h ? h : currentMaxCount;
-			}
+			currentMaxCount = currentMaxCount < s.heapIndices.size() ? s.heapIndices.size() : currentMaxCount;
 		}
 		return currentMaxCount;
 	};
-
+	unsigned int heapCount = 0;
 	heapCount = getMaxCount(mRayGenShaders, heapCount);
 	heapCount = getMaxCount(mHitGroupShaders, heapCount);
 	heapCount = getMaxCount(mMissShaders, heapCount);
@@ -113,7 +108,7 @@ void ShaderTable::CreateShaderTable(unsigned int maxHeapCount, const MWCptr<ID3D
 void ShaderTable::WriteShaderTable(const std::shared_ptr<RtPipelineState>& pipelineState, const std::shared_ptr<D3DDescriptorHeap>& heap)
 {
 	HRESULT hr = S_OK;
-	unsigned char* data;
+	unsigned char* data = nullptr;
 	hr = mShaderTable->Map(0, nullptr, reinterpret_cast<void**>(&data));
 	d3d_create_helper::D3DError(hr);
 
@@ -127,15 +122,15 @@ void ShaderTable::WriteShaderTable(const std::shared_ptr<RtPipelineState>& pipel
 		for (unsigned int i = 0; i <  shaders.size(); ++i)
 		{
 			auto ptr = writePtr + i * entrySize;
-			memcpy(&writePtr, rtPsoProps->GetShaderIdentifier(shaders[i].name.data()), D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES);
+			auto identifier = rtPsoProps->GetShaderIdentifier(shaders[i].name.data());
+			memcpy(ptr, identifier, D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES);
 			ptr += D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
 			auto& indices = shaders[i].heapIndices;
 			for (unsigned int j = 0; j < indices.size(); ++j)
 			{
-				const unsigned int gpuHandleSize = 8U;
 				auto gpuHandle = heap->GetGpuHandle(indices[j]).ptr;
-				memcpy(&ptr, &gpuHandle, gpuHandleSize);
-				ptr += gpuHandleSize;
+				memcpy(ptr, &gpuHandle, sizeof(gpuHandle));
+				ptr += sizeof(gpuHandle);
 			}
 		}
 
@@ -143,8 +138,8 @@ void ShaderTable::WriteShaderTable(const std::shared_ptr<RtPipelineState>& pipel
 	};
 
 	data = writeShaderInfo(mRayGenShaders, heap, data, mEntrySize);
-	data = writeShaderInfo(mHitGroupShaders, heap, data, mEntrySize);
 	data = writeShaderInfo(mMissShaders, heap, data, mEntrySize);
+	data = writeShaderInfo(mHitGroupShaders, heap, data, mEntrySize);
 
 	mShaderTable->Unmap(0, nullptr);
 }

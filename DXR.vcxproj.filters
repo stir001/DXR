@@ -108,7 +108,7 @@
     <ClCompile Include="DrawObjectCreator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="D3DCommandList.cpp">
+    <ClCompile Include="D3DHeplerFunction.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,7 +185,7 @@
     <ClInclude Include="DrawObjectCreator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="D3DCommandList.h">
+    <ClInclude Include="D3DHeplerFunction.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

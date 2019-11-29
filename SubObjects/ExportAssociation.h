@@ -21,6 +21,7 @@ private:
 	D3D12_STATE_SUBOBJECT mSubObject;
 	D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION mAssociation;
 	std::vector<LPCWSTR> mNames;
+	LPCWSTR* mNamePtr;
 	unsigned int mAssociateIndex;
 };
 

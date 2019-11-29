@@ -35,7 +35,7 @@ namespace d3d_create_helper
 {
 	void D3DError(HRESULT hr);
 	MWCptr<ID3D12RootSignature> CreateRootSignature(const MWCptr<ID3D12Device5>& device, const D3D12_ROOT_SIGNATURE_DESC& desc);
-	MWCptr<ID3D12Resource> CreateBuffer(const MWCptr<ID3D12Device>& device, unsigned int bufferSize, D3D12_RESOURCE_FLAGS flag, D3D12_RESOURCE_STATES state, const D3D12_HEAP_PROPERTIES& heapProps);
+	MWCptr<ID3D12Resource> CreateBuffer(const MWCptr<ID3D12Device>& device, unsigned int width, D3D12_RESOURCE_FLAGS flag, D3D12_RESOURCE_STATES state, const D3D12_HEAP_PROPERTIES& heapProps);
 	MWCptr<ID3D12Resource> CreateTexture2D(const MWCptr<ID3D12Device>& device, unsigned int height, unsigned int width, D3D12_TEXTURE_LAYOUT layout, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flag);
 	D3D12_HEAP_PROPERTIES GetUploadHeapProps();
 	D3D12_HEAP_PROPERTIES GetDefaultHeapProps();
@@ -49,6 +49,7 @@ namespace d3d_create_helper
 	unsigned int Alignment(unsigned int alignment, unsigned int val);
 	D3D12_CONSTANT_BUFFER_VIEW_DESC CreateConstantBufferView(D3D12_GPU_VIRTUAL_ADDRESS address, unsigned int bufferSize);
 	D3D12_SHADER_RESOURCE_VIEW_DESC CreateSRVTexture2D(DXGI_FORMAT format);
+	D3D12_SHADER_RESOURCE_VIEW_DESC CreateSRVAS(const MWCptr<ID3D12Resource>& reosurce);
 	D3D12_UNORDERED_ACCESS_VIEW_DESC CreateUAVTexture2D();
 	D3D12_DEPTH_STENCIL_VIEW_DESC CreateDepthStencilView(DXGI_FORMAT format);
 	D3D12_RENDER_TARGET_VIEW_DESC CreateRenderTargetViewDesc(DXGI_FORMAT format);//texture2d

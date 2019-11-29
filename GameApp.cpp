@@ -34,6 +34,8 @@ void GameApp::Run()
 {
 	while (ProcessMessage())
 	{
+		mRenderer->BeginFrame();
+
 		mRenderer->Render();
 	}
 }

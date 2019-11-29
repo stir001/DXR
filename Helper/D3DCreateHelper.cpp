@@ -15,10 +15,10 @@ void d3d_create_helper::D3DError(HRESULT hr)
 		nullptr,
 		hr,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPWSTR)&str,
+		(LPSTR)&str,
 		0,
 		nullptr);
-	OutputDebugString((LPWSTR)str);
+	OutputDebugString((LPSTR)str);
 	LocalFree(str);
 #endif // _DEBUG
 }
@@ -38,7 +38,7 @@ MWCptr<ID3D12RootSignature> d3d_create_helper::CreateRootSignature(const MWCptr<
 	return rootSignature;
 }
 
-MWCptr<ID3D12Resource> d3d_create_helper::CreateBuffer(const MWCptr<ID3D12Device>& device, unsigned int bufferSize, D3D12_RESOURCE_FLAGS flag, D3D12_RESOURCE_STATES state, const D3D12_HEAP_PROPERTIES& heapProps)
+MWCptr<ID3D12Resource> d3d_create_helper::CreateBuffer(const MWCptr<ID3D12Device>& device, unsigned int width, D3D12_RESOURCE_FLAGS flag, D3D12_RESOURCE_STATES state, const D3D12_HEAP_PROPERTIES& heapProps)
 {
 	D3D12_RESOURCE_DESC desc = {};
 	desc.Alignment = 0;
@@ -47,7 +47,7 @@ MWCptr<ID3D12Resource> d3d_create_helper::CreateBuffer(const MWCptr<ID3D12Device
 	desc.Flags = flag;
 	desc.Format = DXGI_FORMAT_UNKNOWN;
 	desc.Height = 1;
-	desc.Width = bufferSize;
+	desc.Width = width;
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	desc.MipLevels = 1;
 	desc.SampleDesc.Count = 1;
@@ -225,13 +225,22 @@ D3D12_SHADER_RESOURCE_VIEW_DESC d3d_create_helper::CreateSRVTexture2D(DXGI_FORMA
 	return srv;
 }
 
+D3D12_SHADER_RESOURCE_VIEW_DESC d3d_create_helper::CreateSRVAS(const MWCptr<ID3D12Resource>& resource)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+	desc.ViewDimension = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	desc.RaytracingAccelerationStructure.Location = resource->GetGPUVirtualAddress();
+	return desc;
+}
+
 D3D12_UNORDERED_ACCESS_VIEW_DESC d3d_create_helper::CreateUAVTexture2D()
 {
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uav = {};
 	uav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-	uav.Format = DXGI_FORMAT_UNKNOWN;
-	uav.Texture2D.MipSlice = 1U;
-	uav.Texture2D.PlaneSlice = 1U;
+	//uav.Format = DXGI_FORMAT_UNKNOWN;
+	//uav.Texture2D.MipSlice = 0U;
+	//uav.Texture2D.PlaneSlice = 0U;
 	return uav;
 }
 
