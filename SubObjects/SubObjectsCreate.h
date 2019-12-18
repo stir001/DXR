@@ -28,4 +28,5 @@ namespace sub_objects
 	std::shared_ptr<SubObject> CreateShaderConfig(unsigned int maxAttributeSize, unsigned int maxPayloadSize);
 	//MaxTraceRecursionDepth‚ğİ’è‚·‚é
 	std::shared_ptr<SubObject> CreatePipelineConfig(unsigned int maxTraceRecursionDepth);
+	std::shared_ptr<SubObject> CreateStateConfig();
 }

@@ -13,19 +13,22 @@ ShaderTable::~ShaderTable()
 {
 }
 
-void ShaderTable::AddHitGroupShader(const ShaderInfo& info)
+unsigned int ShaderTable::AddHitGroupShader(const ShaderInfo& info)
 {
 	mHitGroupShaders.push_back(info);
+	return mHitGroupShaders.size() - 1;
 }
 
-void ShaderTable::AddRayGenShader(const ShaderInfo& info)
+unsigned int ShaderTable::AddRayGenShader(const ShaderInfo& info)
 {
 	mRayGenShaders.push_back(info);
+	return mRayGenShaders.size() - 1;
 }
 
-void ShaderTable::AddMissShader(const ShaderInfo& info)
+unsigned int ShaderTable::AddMissShader(const ShaderInfo& info)
 {
 	mMissShaders.push_back(info);
+	return mMissShaders.size() - 1;
 }
 
 void ShaderTable::Create(const ShaderTable::InitStructure& initData)

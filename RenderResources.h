@@ -9,6 +9,7 @@ class D3DDescriptorHeap;
 class RtPipelineState;
 class DxilEntryPoints;
 class ShaderTable;
+class DxilLibrarySubobjects;
 namespace sub_objects { class SubObject; }
 struct ID3D12Device5;
 struct ID3D12DescriptorHeap;
@@ -47,6 +48,7 @@ public:
 	MWCptr<IDXGISwapChain3> swapChain;
 	MWCptr<IDXGIFactory4> factory;
 	MWCptr<ID3D12Fence> fence;
+	MWCptr<ID3D12RootSignature> rootSignature;
 	HANDLE fenceEvent;
 	unsigned int fenceValue;
 	D3DResource rtvBuffers[2];
@@ -54,18 +56,18 @@ public:
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvHandles;
 	WindowSize size;//window‚Ì‘å‚«‚³
 	HWND hwnd;
-	std::shared_ptr<sub_objects::SubObject> rayGenRootSig;
-	std::shared_ptr<sub_objects::SubObject> missRootSig;
-	std::shared_ptr<sub_objects::SubObject> closestHitRootSig;
-	MWCptr<ID3D12RootSignature> globalRootSig;
+	struct RootSigShaderBundle
+	{
+		RootSigShaderBundle() : rootSig(nullptr) {};
+		RootSigShaderBundle(const std::shared_ptr<sub_objects::SubObject>& rootSig)
+			:rootSig(rootSig) {};
+		std::shared_ptr<sub_objects::SubObject> rootSig;
+		std::vector<std::wstring> associateShaderNames;
+	};
 	std::shared_ptr<RtPipelineState> pipeline;
 	std::shared_ptr<ShaderTable> shaderTable;
 	std::wstring rayGenName; 
-	std::vector<std::wstring> closestHitNames;
-	std::vector<std::wstring> anyHitNames;
-	std::vector<std::wstring> hitGroupNames;
-	std::vector<std::wstring> missNames;
-
+	std::vector<std::pair<int, std::wstring>> missSets;//rootSignature‚Ìindex‚Æmissshader‚Ì–¼‘O
 private:
 	void InitFactory4();
 	void InitDevice();
@@ -77,14 +79,12 @@ private:
 	void InitRenderTarget();
 	void InitDescriptorHeaps();
 	void InitOutputResource();
+	void InitShaderPair();
 
-	void InitRayGenRootSig();
-	void InitMissRootSig();
-	void InitClosestHitRootSig();
-	void InitGlobalRootSig();
 	void InitPipelineState();
-	std::shared_ptr<DxilEntryPoints> CompileShader();
-	void InitShaderNames();
+	void AddRootSignature(std::shared_ptr<RtPipelineState>& pipeline, const std::vector<RootSigShaderBundle>& root);
 	void InitShaderTable();
+
+	std::shared_ptr<DxilLibrarySubobjects> CompileDxilLibrarySubobject();
 };
 

@@ -4,6 +4,7 @@
 #include "ShaderConfig.h"
 #include "RtPipelineConfig.h"
 #include "RtRootSignature.h"
+#include "StateConfig.h"
 
 using namespace sub_objects;
 
@@ -41,4 +42,10 @@ std::shared_ptr<SubObject> sub_objects::CreatePipelineConfig(unsigned int maxTra
 {
 	std::shared_ptr<SubObject> subObject = std::make_shared<RtPipelineConfig>(maxTraceRecursionDepth);
 	return subObject;
+}
+
+std::shared_ptr<SubObject> sub_objects::CreateStateConfig()
+{
+	std::shared_ptr<SubObject> object = std::make_shared<StateConfig>();
+	return object;
 }

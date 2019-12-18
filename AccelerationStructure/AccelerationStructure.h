@@ -37,6 +37,7 @@ public:
 
 	static ASBuffer InitTopLevelAS(const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& commandList, const std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs);
 	static ASBuffer InitBottomLevelTriangleAS(const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& commandList, const D3D12_RAYTRACING_GEOMETRY_DESC* geometrys, unsigned int geometryCount);
+	static ASBuffer UpdateTopLevelAS(const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& commandList, const std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs, AccelerationStructure::ASBuffer& buffer);
 	static D3D12_RAYTRACING_GEOMETRY_DESC CreateTriangleGeometryDesc(const TriangleBuffers& buffers, const D3D12_RAYTRACING_GEOMETRY_FLAGS& flags);
 private:
 };

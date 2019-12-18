@@ -219,7 +219,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC d3d_create_helper::CreateSRVTexture2D(DXGI_FORMA
 	srv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srv.Texture2D.MipLevels = 1U;
 	srv.Texture2D.PlaneSlice = 1U;
-	srv.Texture2D.MostDetailedMip = 1U;
+	srv.Texture2D.MostDetailedMip = 0U;
 	srv.Texture2D.ResourceMinLODClamp = 1.0f;
 
 	return srv;

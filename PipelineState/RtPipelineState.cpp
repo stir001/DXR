@@ -34,8 +34,6 @@ void RtPipelineState::CreatePipelineState(const MWCptr<ID3D12Device5>& device)
 	desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
 
 	d3d_create_helper::D3DError(device->CreateStateObject(&desc, IID_PPV_ARGS(&mPipelineState)));
-	//mSubs.clear();
-	//mSubObjects.clear();
 }
 
 const D3D12_STATE_SUBOBJECT& RtPipelineState::GetSubObject(unsigned int index) const

@@ -14,7 +14,7 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitTopLevelAS(const MWCp
 {
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input = {};
 	input.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;//配列かポインタの配列かを設定できる
-	input.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;//場合によるパフォーマンス向上のためのフラグ今なしにするが今後は調整対象
+	input.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;//場合によるパフォーマンス向上のためのフラグ今なしにするが今後は調整対象
 	input.NumDescs = instanceDescs.size();
 	input.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 
@@ -32,7 +32,6 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitTopLevelAS(const MWCp
 	asBuffer.instanceDesc = d3d_create_helper::CreateBuffer(device, sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * instanceDescs.size(),
 		D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, d3d_create_helper::GetUploadHeapProps());
 	
-	//TODO:インスタンスDescの生成は個別でやるべき？それぞれのモデル情報と関連付けるほうがいいかもしれない
 	D3D12_RAYTRACING_INSTANCE_DESC* instanceDesc;
 	asBuffer.instanceDesc->Map(0, nullptr, reinterpret_cast<void**>(&instanceDesc));
 	memcpy(instanceDesc, instanceDescs.data(), sizeof(instanceDescs[0]) * instanceDescs.size());
@@ -60,7 +59,7 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitBottomLevelTriangleAS
 {
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs;
 	inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;
-	inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;//BottomLevelではほとんど変更を行わないようにするためFastTraceフラグを立てる
+	inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;//BottomLevelではほとんど変更を行わないようにするためFastTraceフラグを立てる
 	inputs.NumDescs = geometryCount;
 	inputs.pGeometryDescs = geometrys;//マテリアルごとに別々にするのがいい？
 	inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
@@ -92,6 +91,41 @@ AccelerationStructure::ASBuffer AccelerationStructure::InitBottomLevelTriangleAS
 	commandList->ResourceBarrier(1, &uavBarrier);
 
 	return asBuffer;
+}
+
+AccelerationStructure::ASBuffer AccelerationStructure::UpdateTopLevelAS(const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& commandList, const std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs, AccelerationStructure::ASBuffer& buffer)
+{
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input = {};
+	input.DescsLayout = D3D12_ELEMENTS_LAYOUT::D3D12_ELEMENTS_LAYOUT_ARRAY;//配列かポインタの配列かを設定できる
+	input.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE | D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
+	input.NumDescs = instanceDescs.size();
+	input.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE::D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+
+	D3D12_RESOURCE_BARRIER uavBarrier = {};
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+	uavBarrier.UAV.pResource = buffer.result.Get();
+	commandList->ResourceBarrier(1, &uavBarrier);
+
+	D3D12_RAYTRACING_INSTANCE_DESC* instanceDesc;
+	buffer.instanceDesc->Map(0, nullptr, reinterpret_cast<void**>(&instanceDesc));
+	memcpy(instanceDesc, instanceDescs.data(), sizeof(instanceDescs[0]) * instanceDescs.size());
+	buffer.instanceDesc->Unmap(0, nullptr);
+
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC asDesc = {};
+	asDesc.Inputs = input;
+	asDesc.Inputs.InstanceDescs = buffer.instanceDesc->GetGPUVirtualAddress();
+	asDesc.DestAccelerationStructureData = buffer.result->GetGPUVirtualAddress();
+	asDesc.ScratchAccelerationStructureData = buffer.scratch->GetGPUVirtualAddress();
+	asDesc.SourceAccelerationStructureData = buffer.result->GetGPUVirtualAddress();
+
+	commandList->BuildRaytracingAccelerationStructure(&asDesc, 0, nullptr);
+
+	uavBarrier = {};
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+	uavBarrier.UAV.pResource = buffer.result.Get();
+	commandList->ResourceBarrier(1, &uavBarrier);
+
+	return buffer;
 }
 
 D3D12_RAYTRACING_GEOMETRY_DESC AccelerationStructure::CreateTriangleGeometryDesc(const TriangleBuffers& buffers, const D3D12_RAYTRACING_GEOMETRY_FLAGS& flags)

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <d3dcompiler.h>
 
 DirectXCompiler::DirectXCompiler() : mDxc(nullptr), mLib(nullptr), mIncludeHandler(nullptr)
 {
@@ -52,6 +53,8 @@ MWCptr<IDxcBlob> DirectXCompiler::Compile(const std::wstring& shaderPath, const 
 		MessageBox(nullptr, ("Compiler Error : " + log).data(), "ERROR", MB_OK);
 		return 0;
 	}
+	//D3D12_staet_SUb
+	
 
 	MWCptr<IDxcBlob> blob;
 	result->GetResult(blob.GetAddressOf());

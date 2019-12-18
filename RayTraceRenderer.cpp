@@ -7,6 +7,8 @@
 #include "PipelineState/RtPipelineState.h"
 #include "D3DHeplerFunction.h"
 #include "DrawObjectCreator.h"
+#include "Camera.h"
+#include "GameObject.h"
 #include <d3d12.h>
 #include <dxgi1_5.h>
 #include <string>
@@ -41,13 +43,44 @@ void RayTraceRenderer::Init()
 {
 	InitWindow();
 	mResources.Init(mHwnd, WINDOW_WIDTH, WINDOW_HEIGHT);
-	mCreator = std::make_shared<DrawObjectCreator>(*mResources.heapCSU, mResources.device, mResources.cmdList);
-	mTestObject = mCreator->CreateGameObject(0);
+	CreateHitGroupPatterns();
+	mCreator = std::make_shared<DrawObjectCreator>(*mResources.heapCSU, mResources.device, mResources.cmdList, mResources.shaderTable);
+
+	//GameObjectInitalize
+	Vector3 origin = {};
+	float moveLength = 3.0f;
+	mTestObjects.push_back(mCreator->LoadFMD("model/King.fmd"));
+	mTestObjects.back()->SetPos(origin);
+	mTestObjects.push_back(mCreator->LoadFMD("model/Bishop.fmd"));
+	mTestObjects.back()->SetPos(origin + Vector3(moveLength, 0.0f, 0.0f));
+	mTestObjects.push_back(mCreator->LoadFMD("model/Knight.fmd"));
+	mTestObjects.back()->SetPos(origin + Vector3(-moveLength, 0.0f, 0.0f));
+	mTestObjects.push_back(mCreator->LoadFMD("model/pawn.fmd"));
+	mTestObjects.back()->SetPos(origin + Vector3(moveLength * 2.0f, 0.0f, 0.0f));
+	mTestObjects.push_back(mCreator->LoadFMD("model/Queen.fmd"));
+	mTestObjects.back()->SetPos(origin + Vector3(-moveLength * 2.0f, 0.0f, 0.0f));
+	mTestObjects.push_back(mCreator->LoadFMD("model/Rook.fmd"));
 	auto tlas = mCreator->CreateTLAS();
-	
+
+	//outputresourceÇÃí«â¡
+	auto tex2DDesc = d3d_create_helper::CreateSRVTexture2D(DXGI_FORMAT_R8G8B8A8_UNORM);
+	tex2DDesc.Texture2D.PlaneSlice = 0;
+	mResources.outputResource.heapIndex = mResources.heapCSU->AddViewDesc(tex2DDesc, mResources.outputResource.resource);
+
+	//TLASÇÃí«â¡
 	auto desc = d3d_create_helper::CreateSRVAS(tlas.result);
-	
-	auto index =  mResources.heapCSU->AddViewDesc(desc, nullptr);
+	auto tlasIndex =  mResources.heapCSU->AddViewDesc(desc, nullptr);
+
+	//ÉJÉÅÉâÇÃçÏê¨
+	mCamera = std::make_shared<Camera>(mResources.device, *mResources.heapCSU, static_cast<float>(mResources.size.width) / static_cast<float>(mResources.size.height));
+	mCamera->SetPos(Vector3(0.0f, 0.0f, -20.0f));
+
+	//rayGenerationShaderÇÃìoò^
+	ShaderTable::ShaderInfo info = {};
+	info.heapIndices.push_back(mResources.outputResource.heapIndex);
+	info.name = mResources.rayGenName;
+	mResources.shaderTable->AddRayGenShader(info);
+
 	mResources.heapCSU->CreateViews();
 
 	ShaderTable::InitStructure init;
@@ -69,6 +102,8 @@ void RayTraceRenderer::BeginFrame()
 
 void RayTraceRenderer::Render()
 {
+	mCreator->UpdateTLAS();
+
 	auto& cmdList = mResources.cmdList;
 
 	auto& outBuffer = mResources.outputResource.resource;
@@ -227,8 +262,16 @@ void RayTraceRenderer::DispatchRays()
 	desc.HitGroupTable.SizeInBytes = static_cast<UINT64>(table->GetHitGroupNum()) * tableEntrySize;
 
 	auto& cmdList = mResources.cmdList;
-	cmdList->SetComputeRootSignature(mResources.globalRootSig.Get());
+	cmdList->SetComputeRootSignature(mResources.rootSignature.Get());
 	cmdList->SetPipelineState1(mResources.pipeline->GetPipelineState().Get());
+	mResources.cmdList->SetComputeRootDescriptorTable(0, mResources.heapCSU->GetGpuHandle(mCamera->GetCameraHeapIndex()));
+	
 	cmdList->DispatchRays(&desc);
+}
+
+void RayTraceRenderer::CreateHitGroupPatterns()
+{
+	mGlassHitPattern.resize(1);
+	mPlaneHitPattern.resize(1);
 }
 

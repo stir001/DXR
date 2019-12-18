@@ -32,9 +32,9 @@ public:
 	ShaderTable();
 	~ShaderTable();
 
-	void AddHitGroupShader(const ShaderInfo& info);
-	void AddRayGenShader(const ShaderInfo& info);
-	void AddMissShader(const ShaderInfo& info);
+	unsigned int AddHitGroupShader(const ShaderInfo& info);
+	unsigned int AddRayGenShader(const ShaderInfo& info);
+	unsigned int AddMissShader(const ShaderInfo& info);
 	void Create(const InitStructure& initData);
 	unsigned long long GetShaderTableEntrySize() const;
 	D3D12_GPU_VIRTUAL_ADDRESS GetRayGenTableAddress() const;

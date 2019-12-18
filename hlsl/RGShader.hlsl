@@ -25,8 +25,71 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+GlobalRootSignature GlobalRootSig =
+{
+	"DescriptorTable(CBV(b0))"
+};
+
+LocalRootSignature RayGenRootSig =
+{
+	"DescriptorTable(UAV(u0), SRV(t0))"
+};
+
+LocalRootSignature EmptyRootSig =
+{
+	" "
+};
+
+LocalRootSignature NormalRootSig =
+{
+	"DescriptorTable(SRV(t1))"
+};
+
+TriangleHitGroup DefaulltHitGroup = {
+	"",
+	"chs"
+};
+
+TriangleHitGroup NormalHitGroup = {
+	"",
+	"chessChs"
+};
+
+SubobjectToExportsAssociation RayGenAssociation =
+{
+	"RayGenRootSig",
+	"rayGen"
+};
+
+SubobjectToExportsAssociation MissAssociation = {
+	"EmptyRootSig",
+	"miss"
+};
+
+SubobjectToExportsAssociation ClosestHitAssociation = {
+	"NormalRootSig",
+	"NormalHitGroup"
+};
+
+RaytracingShaderConfig ShaderConfig = {
+	12,
+	8,
+};
+
+RaytracingPipelineConfig PipelineConfig = {
+	1
+};
+
+struct CameraConstant
+{
+	matrix screenToWorld;
+	float4 pos;
+};
+
 RWTexture2D<float4> gOutput : register(u0);
 RaytracingAccelerationStructure gRtScene : register(t0);
+StructuredBuffer<float3> normal : register(t1);
+ConstantBuffer<CameraConstant> camera : register(b0);
 
 float3 linearToSrgb(float3 c)
 {
@@ -46,23 +109,17 @@ struct RayPayload
 [shader("raygeneration")]
 void rayGen()
 {
+	int3 launchIndex = DispatchRaysIndex();
+	int3 launchDim = DispatchRaysDimensions();
+	float2 screen = launchIndex.xy - (launchDim.xy / 2);//ç∂è„(0,0)Å®Å´+
+	//yÇÕâ∫Ç™+ÇÃç¿ïWånÇ…Ç»Ç¡ÇƒÇ¢ÇÈÇÃÇ≈-1Çä|ÇØÇƒÇ¢ÇÈ
+	float4 worldPos = mul(camera.screenToWorld, float4(screen.x / (launchDim.x / 2.0f), -screen.y / (launchDim.y / 2.0f), 0.0f, 1.0f));
 
-	//uint3 launchIndex = DispatchRaysIndex();
-	//float3 col = linearToSrgb(float3(0.4, 0.6, 0.2));
-	//gOutput[launchIndex.xy] = float4(col, 1);
-
-	uint3 launchIndex = DispatchRaysIndex();
-	uint3 launchDim = DispatchRaysDimensions();
-
-	float2 crd = float2(launchIndex.xy);
-	float2 dims = float2(launchDim.xy);
-
-	float2 d = ((crd / dims) * 2.f - 1.f);
-	float aspectRatio = dims.x / dims.y;
+	worldPos = worldPos / worldPos.w;
 
 	RayDesc ray;
-	ray.Origin = float3(0, 0, -2);
-	ray.Direction = normalize(float3(d.x * aspectRatio, -d.y, 1));
+	ray.Origin = camera.pos.xyz;
+	ray.Direction = normalize(float3(worldPos.xyz - camera.pos.xyz));
 
 	ray.TMin = 0;
 	ray.TMax = 100000;
@@ -90,4 +147,12 @@ void chs(inout RayPayload payload, in BuiltInTriangleIntersectionAttributes attr
 	const float3 C = float3(0, 0, 1);
 
 	payload.color = A * barycentrics.x + B * barycentrics.y + C * barycentrics.z;
+}
+
+[shader("closesthit")]
+void chessChs(inout RayPayload payload, in BuiltInTriangleIntersectionAttributes attribs)
+{
+	float3 light = normalize(float3(-1.0f, -1.0f, 1.0f));
+	float cos = dot(-light, normal[PrimitiveIndex()]);
+	payload.color = float3(1.0f,1.0f,1.0f) * cos;
 }

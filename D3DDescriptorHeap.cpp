@@ -111,7 +111,6 @@ unsigned int D3DDescriptorHeap::AddViewDesc(const D3D12_RENDER_TARGET_VIEW_DESC 
 	}
 	
 	mDescs.emplace_back(std::make_shared<RtvDesc>(rtv, resource));
-
 	return static_cast<unsigned int>(mDescs.size()) - 1;
 }
 
@@ -123,7 +122,6 @@ unsigned int D3DDescriptorHeap::AddViewDesc(const D3D12_DEPTH_STENCIL_VIEW_DESC 
 	}
 
 	mDescs.emplace_back(std::make_shared<DSvDesc>(dsv, resource));
-
 	return static_cast<unsigned int>(mDescs.size()) - 1;
 }
 
@@ -135,8 +133,37 @@ unsigned int D3DDescriptorHeap::AddViewDesc(const D3D12_SAMPLER_DESC & smp)
 	}
 
 	mDescs.emplace_back(std::make_shared<SmpDesc>(smp));
-
 	return static_cast<unsigned int>(mDescs.size()) - 1;
+}
+
+void D3DDescriptorHeap::ReplaceViewDesc(const D3D12_CONSTANT_BUFFER_VIEW_DESC& cbv, unsigned int index)
+{
+	mDevice->CreateConstantBufferView(&cbv, GetCpuHandle(index));
+}
+
+void D3DDescriptorHeap::ReplaceViewDesc(const D3D12_SHADER_RESOURCE_VIEW_DESC& srv, const MWCptr<ID3D12Resource>& resource, unsigned int index)
+{
+	mDevice->CreateShaderResourceView(resource.Get(), &srv, GetCpuHandle(index));
+}
+
+void D3DDescriptorHeap::ReplaceViewDesc(const D3D12_UNORDERED_ACCESS_VIEW_DESC& uav, const MWCptr<ID3D12Resource>& resource, const MWCptr<ID3D12Resource>& counter, unsigned int index)
+{
+	mDevice->CreateUnorderedAccessView(resource.Get(), counter.Get(), &uav, GetCpuHandle(index));
+}
+
+void D3DDescriptorHeap::ReplaceViewDesc(const D3D12_RENDER_TARGET_VIEW_DESC& rtv, const MWCptr<ID3D12Resource>& resource, unsigned int index)
+{
+	mDevice->CreateRenderTargetView(resource.Get(), &rtv, GetCpuHandle(index));
+}
+
+void D3DDescriptorHeap::ReplaceViewDesc(const D3D12_DEPTH_STENCIL_VIEW_DESC& dsv, const MWCptr<ID3D12Resource>& resource, unsigned int index)
+{
+	mDevice->CreateDepthStencilView(resource.Get(), &dsv, GetCpuHandle(index));
+}
+
+void D3DDescriptorHeap::ReplaceViewDesc(const D3D12_SAMPLER_DESC& smp, unsigned int index)
+{
+	mDevice->CreateSampler(&smp, GetCpuHandle(index));
 }
 
 void D3DDescriptorHeap::CreateViews(bool isShaderVisible)

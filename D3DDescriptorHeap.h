@@ -34,6 +34,13 @@ public:
 	[[nodiscard]] unsigned int AddViewDesc(const D3D12_DEPTH_STENCIL_VIEW_DESC & dsv, const MWCptr<ID3D12Resource>& resource);
 	[[nodiscard]] unsigned int AddViewDesc(const D3D12_SAMPLER_DESC & smp);
 
+	void ReplaceViewDesc(const D3D12_CONSTANT_BUFFER_VIEW_DESC& cbv, unsigned int index);
+	void ReplaceViewDesc(const D3D12_SHADER_RESOURCE_VIEW_DESC& srv, const MWCptr<ID3D12Resource>& resource, unsigned int index);
+	void ReplaceViewDesc(const D3D12_UNORDERED_ACCESS_VIEW_DESC& uav, const MWCptr<ID3D12Resource>& resource, const MWCptr<ID3D12Resource>& counter, unsigned int index);
+	void ReplaceViewDesc(const D3D12_RENDER_TARGET_VIEW_DESC& rtv, const MWCptr<ID3D12Resource>& resource, unsigned int index);
+	void ReplaceViewDesc(const D3D12_DEPTH_STENCIL_VIEW_DESC& dsv, const MWCptr<ID3D12Resource>& resource, unsigned int index);
+	void ReplaceViewDesc(const D3D12_SAMPLER_DESC& smp, unsigned int index);
+
 	void CreateViews(bool isShaderVisible = true);
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle(unsigned int offset) const;
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle(unsigned int offset) const;

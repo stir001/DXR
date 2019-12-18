@@ -10,6 +10,7 @@ class RtPipelineState;
 class ShaderTable;
 class DrawObjectCreator;
 class GameObject;
+class Camera;
 struct ID3D12Device5;
 struct ID3D12DescriptorHeap;
 struct ID3D12CommandList;
@@ -54,11 +55,16 @@ private:
 	void ResetCommandList();
 	void SwapChainPresent();
 	void DispatchRays();
+	void CreateHitGroupPatterns();
 
 	RenderResources mResources;
 	std::shared_ptr<DrawObjectCreator> mCreator;
 	HINSTANCE mHInst;
 	HWND mHwnd;
-	std::shared_ptr<GameObject> mTestObject;
+	std::vector<std::shared_ptr<GameObject>> mTestObjects;
+
+	std::vector<std::wstring> mGlassHitPattern;
+	std::vector<std::wstring> mPlaneHitPattern;
+	std::shared_ptr<Camera> mCamera;
 };
 
