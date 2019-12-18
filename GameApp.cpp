@@ -27,7 +27,6 @@ void GameApp::Init(HINSTANCE hInst)
 
 	mRenderer = std::make_unique<RayTraceRenderer>(hInst);
 
-	//mGameObject = std::make_shared<GameObject>(mRenderer->GetDevice(), mRenderer->GetCommandList());
 }
 
 void GameApp::Run()

@@ -47,7 +47,7 @@ public:
 	const RenderResources::WindowSize& GetWindowSize() const;
 	const MWCptr<ID3D12GraphicsCommandList4>& GetCommandList() const;
 	const MWCptr<ID3D12Device5>& GetDevice() const;
-	std::shared_ptr<DrawObjectCreator> GetDrawObjectCreator() const;
+	//std::shared_ptr<DrawObjectCreator> GetDrawObjectCreator() const;
 	void CreateViews();
 private:
 	void InitWindow();
@@ -55,7 +55,6 @@ private:
 	void ResetCommandList();
 	void SwapChainPresent();
 	void DispatchRays();
-	void CreateHitGroupPatterns();
 
 	RenderResources mResources;
 	std::shared_ptr<DrawObjectCreator> mCreator;
@@ -63,8 +62,6 @@ private:
 	HWND mHwnd;
 	std::vector<std::shared_ptr<GameObject>> mTestObjects;
 
-	std::vector<std::wstring> mGlassHitPattern;
-	std::vector<std::wstring> mPlaneHitPattern;
 	std::shared_ptr<Camera> mCamera;
 };
 

@@ -5,6 +5,36 @@ namespace DirectX {
 }
 
 struct Vector4;
+struct Vector3;
+struct Vector2;
+
+struct Vector2 {
+	Vector2() : x(0), y(0){};
+	Vector2(float x, float y) : x(x), y(y) {};
+
+	float x;
+	float y;
+
+	Vector2 operator+(const Vector2& v)
+	{
+		return Vector2(x + v.x, y + v.y);
+	}
+
+	Vector2 operator+=(const Vector2& v)
+	{
+		return *this = *this + v;
+	}
+
+	Vector2 operator-(const Vector2& v)
+	{
+		return Vector2(x - v.x, y - v.y);
+	}
+
+	Vector2 operator-=(const Vector2& v)
+	{
+		return *this = *this - v;
+	}
+};
 
 struct Vector3
 {

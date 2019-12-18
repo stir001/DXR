@@ -1,4 +1,5 @@
 #include "DxInput.h"
+#include <cassert>
 
 DxInput::DxInput(HWND hwnd) : mKeyState{}, mPreKeyState{}, mHWND(hwnd)
 {
@@ -26,7 +27,7 @@ const unsigned char* DxInput::GetKeyState()
 	return mKeyState;
 }
 
-const DirectX::XMFLOAT2 DxInput::GetMousePos() const
+const Vector2 DxInput::GetMousePos() const
 {
 	POINT mouse;
 	GetCursorPos(&mouse);

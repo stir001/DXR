@@ -10,7 +10,6 @@ struct D3D12_RAYTRACING_INSTANCE_DESC;
 enum D3D12_RAYTRACING_GEOMETRY_FLAGS;
 enum DXGI_FORMAT : int;
 
-
 class AccelerationStructure
 {
 public:

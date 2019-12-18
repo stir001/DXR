@@ -43,7 +43,6 @@ void RayTraceRenderer::Init()
 {
 	InitWindow();
 	mResources.Init(mHwnd, WINDOW_WIDTH, WINDOW_HEIGHT);
-	CreateHitGroupPatterns();
 	mCreator = std::make_shared<DrawObjectCreator>(*mResources.heapCSU, mResources.device, mResources.cmdList, mResources.shaderTable);
 
 	//GameObjectInitalize
@@ -269,9 +268,4 @@ void RayTraceRenderer::DispatchRays()
 	cmdList->DispatchRays(&desc);
 }
 
-void RayTraceRenderer::CreateHitGroupPatterns()
-{
-	mGlassHitPattern.resize(1);
-	mPlaneHitPattern.resize(1);
-}
 

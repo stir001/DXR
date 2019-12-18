@@ -140,6 +140,7 @@
     <ClCompile Include="FbxStructure.cpp" />
     <ClCompile Include="FMDdata.cpp" />
     <ClCompile Include="FMDLoader.cpp" />
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Helper\CharConvert.cpp" />
     <ClCompile Include="Helper\D3DCreateHelper.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="FbxStructure.h" />
     <ClInclude Include="FMDdata.h" />
     <ClInclude Include="FMDLoader.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Helper\CharConvert.h" />
     <ClInclude Include="Helper\Comptr.h" />

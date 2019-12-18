@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Mathatic.h"
 #include <Windows.h>
 #include <memory>
 #include <Xinput.h>
-#include <DirectXMath.h>
 #include <vector>
 
 //window側で定義されていない部分の
@@ -126,7 +126,7 @@ public:
 	~DxInput();
 	//毎フレーム呼ぶ
 	bool UpdateKeyState();
-	const DirectX::XMFLOAT2 GetMousePos() const;
+	const Vector2 GetMousePos() const;
 
 	//@return 256の要素をもつ配列を返す
 	const unsigned char* GetKeyState();
