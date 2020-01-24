@@ -54,3 +54,11 @@ bool DxInput::IsKeyUp(VIRTUAL_KEY_INDEX index) const
 {
 	return (!(mKeyState[static_cast<int>(index)] & eKEY_STATE_CHECK_DOWN)) && (mPreKeyState[static_cast<int>(index)] & eKEY_STATE_CHECK_DOWN);
 }
+
+void DxInput::SetMousePos(float x, float y) const
+{
+	POINT p = { x,y };
+	auto rtn = ClientToScreen(mHWND, &p);
+	assert(rtn);
+	SetCursorPos(p.x,  p.y);
+}

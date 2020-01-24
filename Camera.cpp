@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 
 Camera::Camera(const MWCptr<ID3D12Device5>& device, D3DDescriptorHeap& heap, float aspectRatio) : mBuffer{ Matrix::Identity(),Vector4()}, mFov(DirectX::XM_PIDIV2)
-	, mNear(1.0f), mFar(100000.0f), mRota(0.0f, 0.0f, 0.0f), mView(Matrix::Identity()), mProjection(Matrix::Identity()), mAspectratio(aspectRatio), mHeapIndex(UINT_MAX)
+	, mNear(1.0f), mFar(100000.0f), mView(Matrix::Identity()), mProjection(Matrix::Identity()), mAspectratio(aspectRatio), mHeapIndex(UINT_MAX)
 	, mDir{0.0f,0.0f,1.0f}, mRotaMatrix(Matrix::Identity())
 {
 	Init(device, heap);
@@ -38,18 +38,36 @@ void Camera::AddRotaYAxis(const float rad)
 	Matrix yRota;
 	yRota = mat;
 	mDir = yRota * Vector4(mDir.x, mDir.y, mDir.z, 1.0f);
-	mRota.y += rad;
 	mRotaMatrix *= Matrix::Transpose(yRota);
+	CalculateViewProj();
+	Map();
 }
 
 void Camera::AddRotaSideAxis(const float rad)
 {
 	auto cross = Vector3::Cross(mDir, {0.0f, 1.0f, 0.0f}).Normalized();
+	auto mat = DirectX::XMMatrixRotationAxis({ cross.x, cross.y, cross.z }, rad);
+	Matrix sideRota;
+	sideRota = mat;
+	mRotaMatrix *= Matrix::Transpose(sideRota);
+	CalculateViewProj();
+	Map();
 }
 
 unsigned int Camera::GetCameraHeapIndex() const
 {
 	return mHeapIndex;
+}
+
+void Camera::MoveFront(float val)
+{
+	AddPos(Vector3(mDir.x, 0.0f, mDir.z) * val);
+}
+
+void Camera::MoveSide(float val)
+{
+	auto side = Vector3::Cross(mDir, Vector3(0.0f, 1.0f, 0.0f)).Normalized();
+	AddPos(side * val);
 }
 
 void Camera::Init(const MWCptr<ID3D12Device5>& device, D3DDescriptorHeap& heap)
@@ -68,20 +86,16 @@ void Camera::Init(const MWCptr<ID3D12Device5>& device, D3DDescriptorHeap& heap)
 
 void Camera::CalculateViewProj()
 {
-	auto projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, mAspectratio, mNear, mFar);
+	auto projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, mAspectratio, mNear, mFar);
 	
 	auto pos = mBuffer.pos;
 	auto translate = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
-	//auto rota = DirectX::XMMatrixRotationRollPitchYaw(mRota.x, mRota.y, mRota.z);
 	DirectX::XMMATRIX rota;
 	memcpy(&rota, &mRotaMatrix, sizeof(rota));
 	auto afin = rota * translate;
 	auto view = DirectX::XMMatrixInverse(nullptr, afin);
 	mBuffer.inverseViewProj = DirectX::XMMatrixInverse(nullptr, view * projection);
-
-	Vector3 dir;
-	dir = mBuffer.inverseViewProj * Vector4(0.0f, 0.0f, 0.0f, 1.0f) - pos;
-	dir.Normalized();
+	//mBuffer.inverseViewProj = Matrix::Transpose(mBuffer.inverseViewProj);
 }
 
 void Camera::Map()

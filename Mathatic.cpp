@@ -28,6 +28,11 @@ Matrix operator*(const float v, const Matrix& m)
 	return m * v;
 }
 
+Vector3 Vector3::operator-() const
+{
+	return Vector3(-x, -y, -z);
+}
+
 Vector3 Vector3::operator=(const Vector4& v)
 {
 	x = v.x;

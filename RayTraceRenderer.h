@@ -11,6 +11,7 @@ class ShaderTable;
 class DrawObjectCreator;
 class GameObject;
 class Camera;
+class DxInput;
 struct ID3D12Device5;
 struct ID3D12DescriptorHeap;
 struct ID3D12CommandList;
@@ -25,6 +26,8 @@ struct ID3D12Fence;
 struct ID3D12Resource;
 struct D3D12_CPU_DESCRIPTOR_HANDLE;
 struct D3DResource;
+struct Vector4;
+struct Vector3;
 
 typedef void* HANDLE;
 
@@ -47,7 +50,9 @@ public:
 	const RenderResources::WindowSize& GetWindowSize() const;
 	const MWCptr<ID3D12GraphicsCommandList4>& GetCommandList() const;
 	const MWCptr<ID3D12Device5>& GetDevice() const;
-	//std::shared_ptr<DrawObjectCreator> GetDrawObjectCreator() const;
+	std::shared_ptr<DxInput> CreateDxInput() const;
+	std::shared_ptr<Camera> GetCamera() const;
+	std::vector<std::shared_ptr<GameObject>>& GetGameObjects();
 	void CreateViews();
 private:
 	void InitWindow();
@@ -55,12 +60,17 @@ private:
 	void ResetCommandList();
 	void SwapChainPresent();
 	void DispatchRays();
+	void InitChessPos();
+	void SetPosLine(std::vector<std::shared_ptr<GameObject>>& objects, const Vector3& basePos, const Vector3& offset, const unsigned int baseIndex);
+	unsigned int LoadColor8Powns(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset);//indexOffsetにロードした分を追加した数字を返す(+8)
+	unsigned int LoadConstantPieces(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset, bool reverse = false);//indexOffsetにロードした分を追加した数字を返す(+3)
+	unsigned int LoadOneSide(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset);
 
 	RenderResources mResources;
 	std::shared_ptr<DrawObjectCreator> mCreator;
 	HINSTANCE mHInst;
 	HWND mHwnd;
-	std::vector<std::shared_ptr<GameObject>> mTestObjects;
+	std::vector<std::shared_ptr<GameObject>> mGameObjects;
 
 	std::shared_ptr<Camera> mCamera;
 };

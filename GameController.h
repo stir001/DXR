@@ -15,6 +15,7 @@ public:
 	void Update();
 private:
 	void CameraMove();
+
 	std::shared_ptr<DxInput> mInput;
 	std::shared_ptr<Camera> mCamera;
 	std::vector<std::shared_ptr<GameObject>>& mObjects;

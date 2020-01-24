@@ -20,26 +20,20 @@ namespace Fmd {
 class GameObject
 {
 public:
-	GameObject(const Fmd::FMDFileData& data, std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs, const MWCptr<ID3D12Device5>& device,
-		const MWCptr<ID3D12GraphicsCommandList4>& cmdList, D3DDescriptorHeap& heap, std::shared_ptr<ShaderTable>& shaderTable);
+	GameObject(std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs);
 	const AccelerationStructure::ASBuffer& GetBLAS() const;
-	void SetPos(const Vector3& pos);
-	void AddPos(const Vector3& val);
-
-	void Draw();
-private:
-	void InitFmd(const Fmd::FMDFileData& data, const MWCptr<ID3D12Device5>& device, const MWCptr<ID3D12GraphicsCommandList4>& cmdList,
-		D3DDescriptorHeap& heap, std::shared_ptr<ShaderTable>& shaderTable);
-	void CreateInstanceDesc(std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs, unsigned int hitGroupIndex);
-	void UpdateMatrix();
+	virtual void SetPos(const Vector3& pos);
+	virtual void AddPos(const Vector3& val);
+	virtual void AddRotaY(const float rad);
+	virtual void AddRotaZ(const float rad);
+protected:
+	virtual void UpdateMatrix();
+	virtual void CreateInstanceDesc(std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs, unsigned int hitGroupIndex);
 
 	AccelerationStructure::ASBuffer mBLAS;
-	MWCptr<ID3D12Resource> mVertexBuffer;
-	MWCptr<ID3D12Resource> mIndexBuffer;
-	MWCptr<ID3D12Resource> mNormalBuffer;
 	std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> mGeoDescs;//頂点情報をマテリアル単位で管理
 	std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& mInstanceDescs;
-	unsigned int mInstansDescIndex;
+	unsigned int mInstanceDescIndex;
 	Matrix mMat;
 };
 

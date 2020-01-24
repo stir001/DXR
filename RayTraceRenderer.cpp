@@ -9,9 +9,11 @@
 #include "DrawObjectCreator.h"
 #include "Camera.h"
 #include "GameObject.h"
+#include "DxInput.h"
 #include <d3d12.h>
 #include <dxgi1_5.h>
 #include <string>
+#include <DirectXMath.h>
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -46,19 +48,26 @@ void RayTraceRenderer::Init()
 	mCreator = std::make_shared<DrawObjectCreator>(*mResources.heapCSU, mResources.device, mResources.cmdList, mResources.shaderTable);
 
 	//GameObjectInitalize
-	Vector3 origin = {};
+	float epsilonY = 0.001f;
 	float moveLength = 3.0f;
-	mTestObjects.push_back(mCreator->LoadFMD("model/King.fmd"));
-	mTestObjects.back()->SetPos(origin);
-	mTestObjects.push_back(mCreator->LoadFMD("model/Bishop.fmd"));
-	mTestObjects.back()->SetPos(origin + Vector3(moveLength, 0.0f, 0.0f));
-	mTestObjects.push_back(mCreator->LoadFMD("model/Knight.fmd"));
-	mTestObjects.back()->SetPos(origin + Vector3(-moveLength, 0.0f, 0.0f));
-	mTestObjects.push_back(mCreator->LoadFMD("model/pawn.fmd"));
-	mTestObjects.back()->SetPos(origin + Vector3(moveLength * 2.0f, 0.0f, 0.0f));
-	mTestObjects.push_back(mCreator->LoadFMD("model/Queen.fmd"));
-	mTestObjects.back()->SetPos(origin + Vector3(-moveLength * 2.0f, 0.0f, 0.0f));
-	mTestObjects.push_back(mCreator->LoadFMD("model/Rook.fmd"));
+	Vector3 origin = {0.0f, epsilonY, moveLength};
+	const float alpha = 0.4f;
+	Vector4 white = { 1.0f, 1.0f, 1.0f, alpha };
+	Vector4 black = { 0.3f, 0.3f, 0.3f, alpha };
+	unsigned int objectIndex = 0;
+	mGameObjects.resize(32 + 1);
+	objectIndex = LoadOneSide(mGameObjects, white, objectIndex);
+	{
+		for (unsigned int i = 0; i < objectIndex; ++i)
+		{
+			mGameObjects[i]->AddRotaY(PI);
+		}
+	}
+
+	objectIndex = LoadOneSide(mGameObjects, black, objectIndex);
+	InitChessPos();
+
+	mGameObjects[objectIndex++] = (mCreator->CreateChessBoard());
 	auto tlas = mCreator->CreateTLAS();
 
 	//outputresourceÇÃí«â¡
@@ -67,12 +76,11 @@ void RayTraceRenderer::Init()
 	mResources.outputResource.heapIndex = mResources.heapCSU->AddViewDesc(tex2DDesc, mResources.outputResource.resource);
 
 	//TLASÇÃí«â¡
-	auto desc = d3d_create_helper::CreateSRVAS(tlas.result);
-	auto tlasIndex =  mResources.heapCSU->AddViewDesc(desc, nullptr);
+	mCreator->SetTLAS();
 
 	//ÉJÉÅÉâÇÃçÏê¨
 	mCamera = std::make_shared<Camera>(mResources.device, *mResources.heapCSU, static_cast<float>(mResources.size.width) / static_cast<float>(mResources.size.height));
-	mCamera->SetPos(Vector3(0.0f, 0.0f, -20.0f));
+	mCamera->SetPos(Vector3(0.0f, 5.0f, -10.0f));
 
 	//rayGenerationShaderÇÃìoò^
 	ShaderTable::ShaderInfo info = {};
@@ -179,6 +187,21 @@ const MWCptr<ID3D12Device5>& RayTraceRenderer::GetDevice() const
 	return mResources.device;
 }
 
+std::shared_ptr<DxInput> RayTraceRenderer::CreateDxInput() const
+{
+	return std::make_shared<DxInput>(mResources.hwnd);
+}
+
+std::shared_ptr<Camera> RayTraceRenderer::GetCamera() const
+{
+	return mCamera;
+}
+
+std::vector<std::shared_ptr<GameObject>>& RayTraceRenderer::GetGameObjects()
+{
+	return mGameObjects;
+}
+
 void RayTraceRenderer::CreateViews()
 {
 	mResources.heapCSU->CreateViews();
@@ -263,9 +286,87 @@ void RayTraceRenderer::DispatchRays()
 	auto& cmdList = mResources.cmdList;
 	cmdList->SetComputeRootSignature(mResources.rootSignature.Get());
 	cmdList->SetPipelineState1(mResources.pipeline->GetPipelineState().Get());
-	mResources.cmdList->SetComputeRootDescriptorTable(0, mResources.heapCSU->GetGpuHandle(mCamera->GetCameraHeapIndex()));
+	cmdList->SetComputeRootDescriptorTable(0, mResources.heapCSU->GetGpuHandle(mCreator->GetTLASHeapIndex()));
 	
 	cmdList->DispatchRays(&desc);
 }
+
+void RayTraceRenderer::InitChessPos()
+{
+	float boardLength = 3.0f;
+	Vector3 offset = { boardLength, 0.0f, 0.0f };
+	const Vector3 origin = { boardLength * 0.5f, 0.001f, boardLength * 0.5f };
+	unsigned int objectOffset = 0;
+	unsigned int linePieceNum = 8;
+
+	Vector3 leftFront = Vector3(boardLength * -4.0f, 0.0f, boardLength * 3.0f) + origin;
+	SetPosLine(mGameObjects, leftFront, offset, objectOffset);
+	objectOffset += linePieceNum;
+	SetPosLine(mGameObjects, leftFront + Vector3(0.0f, 0.0f, -boardLength), offset, objectOffset);
+	objectOffset += linePieceNum;
+
+	Vector3 leftBack = Vector3(boardLength * -4.0f, 0.0f, boardLength * -4.0f) + origin;
+	SetPosLine(mGameObjects, leftBack, offset, objectOffset);
+	objectOffset += linePieceNum;
+	SetPosLine(mGameObjects, leftBack + Vector3(0.0f, 0.0f, boardLength), offset, objectOffset);
+}
+
+void RayTraceRenderer::SetPosLine(std::vector<std::shared_ptr<GameObject>>& objects, const Vector3& basePos, const Vector3& offset, const unsigned int baseIndex)
+{
+	const unsigned int linePieceNum = 8;
+	for (unsigned int i = 0; i < linePieceNum; ++i)
+	{
+		mGameObjects[baseIndex + i]->SetPos(basePos + offset * i);
+	}
+}
+
+unsigned int RayTraceRenderer::LoadColor8Powns(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset)
+{
+	for (unsigned int i = 0; i < 8; ++i)
+	{
+		mGameObjects[indexOffset + i] = mCreator->LoadChess("model/pawn.fmd", color);
+	}
+
+	return indexOffset + 8;
+}
+
+unsigned int RayTraceRenderer::LoadConstantPieces(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset, bool reverse)
+{
+	if (!reverse)//í èÌ
+	{
+		mGameObjects[indexOffset + 0] = mCreator->LoadChess("model/rook.fmd", color);
+		mGameObjects[indexOffset + 1] = mCreator->LoadChess("model/knight.fmd", color);
+		mGameObjects[indexOffset + 2] = mCreator->LoadChess("model/bishop.fmd", color);
+	}
+	else//îΩì]
+	{
+		mGameObjects[indexOffset + 0] = mCreator->LoadChess("model/Bishop.fmd", color);
+		mGameObjects[indexOffset + 1] = mCreator->LoadChess("model/Knight.fmd", color);
+		mGameObjects[indexOffset + 2] = mCreator->LoadChess("model/Rook.fmd", color);
+	}
+
+	return indexOffset + 3;
+}
+
+unsigned int RayTraceRenderer::LoadOneSide(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset)
+{
+	indexOffset = LoadConstantPieces(mGameObjects, color, indexOffset);
+	{
+		auto mat = DirectX::XMMatrixRotationY(PI / 2.5f);
+		Matrix m;
+		m = mat;
+		mGameObjects[indexOffset++] = mCreator->LoadChess("model/King.fmd", color, m);
+	}
+	{
+		auto mat = DirectX::XMMatrixRotationZ(PI);
+		Matrix m;
+		m = mat;
+		mGameObjects[indexOffset++] = mCreator->LoadChess("model/Queen.fmd", color, m);
+	}
+	indexOffset = LoadConstantPieces(mGameObjects, color, indexOffset, true);
+	indexOffset = LoadColor8Powns(mGameObjects, color, indexOffset);
+	return indexOffset;
+}
+
 
 

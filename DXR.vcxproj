@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="AccelerationStructure\AccelerationStructure.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ChessBoard.cpp" />
     <ClCompile Include="D3DDescriptorHeap.cpp" />
     <ClCompile Include="D3DHeplerFunction.cpp" />
     <ClCompile Include="D3DResource.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="DxInput.cpp" />
     <ClCompile Include="FbxStructure.cpp" />
     <ClCompile Include="FMDdata.cpp" />
+    <ClCompile Include="FmdGameObject.cpp" />
     <ClCompile Include="FMDLoader.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -181,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="AccelerationStructure\AccelerationStructure.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ChessBoard.h" />
     <ClInclude Include="D3DDescriptorHeap.h" />
     <ClInclude Include="D3DHeplerFunction.h" />
     <ClInclude Include="D3DResource.h" />
@@ -189,6 +192,7 @@
     <ClInclude Include="DxInput.h" />
     <ClInclude Include="FbxStructure.h" />
     <ClInclude Include="FMDdata.h" />
+    <ClInclude Include="FmdGameObject.h" />
     <ClInclude Include="FMDLoader.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObject.h" />

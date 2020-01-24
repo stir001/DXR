@@ -16,6 +16,9 @@ public:
 	void AddRotaYAxis(const float rad);//Y²‰ñ“]
 	void AddRotaSideAxis(const float rad);//‰¡²‰ñ“](‹ü•ûŒü‚ÆY²•ûŒü‚É‚’¼‚ÈƒxƒNƒgƒ‹‚Å‚Ì‰ñ“])
 	unsigned int GetCameraHeapIndex() const;
+	void MoveFront(float val);
+	void MoveSide(float val);
+
 private:
 	void Init(const MWCptr<ID3D12Device5>& device, D3DDescriptorHeap& heap);
 	void CalculateViewProj();
@@ -34,7 +37,6 @@ private:
 	Matrix mView;
 	Matrix mProjection;
 	Matrix mRotaMatrix;
-	Vector3 mRota;
 	Vector3 mDir;
 	float mFov;
 	float mAspectratio;

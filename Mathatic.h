@@ -1,5 +1,7 @@
 #pragma once
 
+const float PI = 3.14159265f;
+
 namespace DirectX {
 	struct XMMATRIX;
 }
@@ -43,6 +45,9 @@ struct Vector3
 	float x;
 	float y;
 	float z;
+
+	Vector3 operator-() const;
+
 	Vector3 operator+(const Vector3& v) const {
 		return Vector3(x + v.x, y + v.y, z + v.z);
 	}
@@ -130,7 +135,7 @@ struct Matrix {
 		};
 	};
 
-	Matrix operator+(const Matrix& m)
+	Matrix operator+(const Matrix& m) const
 	{
 		Matrix ret = {	 mat[0][0] + m.mat[0][0], mat[0][1] + m.mat[0][1], mat[0][2] + m.mat[0][3]
 						,mat[1][0] + m.mat[1][0], mat[1][1] + m.mat[1][1], mat[1][2] + m.mat[1][3]
@@ -140,7 +145,7 @@ struct Matrix {
 		return ret;
 	}
 
-	Matrix operator-(const Matrix& m)
+	Matrix operator-(const Matrix& m) const
 	{
 		Matrix ret = {	 mat[0][0] - m.mat[0][0], mat[0][1] - m.mat[0][1], mat[0][2] - m.mat[0][3]
 						,mat[1][0] - m.mat[1][0], mat[1][1] - m.mat[1][1], mat[1][2] - m.mat[1][3]
@@ -150,7 +155,7 @@ struct Matrix {
 		return ret;
 	}
 
-	Matrix operator*(const Matrix& m)
+	Matrix operator*(const Matrix& m) const
 	{
 		auto& v = m.mat;
 		Matrix ret = {	mat[0][0] * v[0][0] + mat[0][1] * v[1][0] + mat[0][2] * v[2][0] + mat[0][3] * v[3][0], mat[0][0] * v[0][1] + mat[0][1] * v[1][1] + mat[0][2] * v[2][1] + mat[0][3] * v[3][1], mat[0][0] * v[0][2] + mat[0][1] * v[1][2] + mat[0][2] * v[2][2] + mat[0][3] * v[3][2], mat[0][0] * v[0][3] + mat[0][1] * v[1][3] + mat[0][2] * v[2][3] + mat[0][3] * v[3][3],
@@ -166,7 +171,7 @@ struct Matrix {
 		return *this = *this * m;
 	}
 
-	Matrix operator/(const float v)
+	Matrix operator/(const float v) const
 	{
 		Matrix ret = {
 			mat[0][0] / v, mat[0][1] / v, mat[0][2] / v, mat[0][3] / v,
@@ -179,7 +184,7 @@ struct Matrix {
 
 	Matrix operator=(const DirectX::XMMATRIX& mat);
 
-	Vector4 operator*(const Vector4& v)
+	Vector4 operator*(const Vector4& v) const
 	{
 		Vector4 ret = {
 			_00 * v.x + _01 * v.y + _02 * v.z + _03 * v.w,
@@ -188,6 +193,25 @@ struct Matrix {
 			_30 * v.x + _31 * v.y + _32 * v.z + _33 * v.w
 		};
 		return ret;
+	}
+
+	Vector4 operator*(const Vector3& v) const
+	{
+		Vector4 ret = {
+			_00 * v.x + _01 * v.y + _02 * v.z + _03 * 1.0f,
+			_10 * v.x + _11 * v.y + _12 * v.z + _13 * 1.0f,
+			_20 * v.x + _21 * v.y + _22 * v.z + _23 * 1.0f,
+			_30 * v.x + _31 * v.y + _32 * v.z + _33 * 1.0f
+		};
+		return ret;
+	}
+
+	bool operator ==(const Matrix& mat) const
+	{
+		return	_00 == mat._00 && _01 == mat._01 && _02 == mat._02 && _03 == mat._03 &&
+				_10 == mat._10 && _11 == mat._11 && _12 == mat._12 && _13 == mat._13 &&
+				_20 == mat._20 && _21 == mat._21 && _22 == mat._22 && _23 == mat._23 &&
+				_30 == mat._30 && _31 == mat._31 && _32 == mat._32 && _33 == mat._33;
 	}
 
 	static Matrix Identity();

@@ -136,6 +136,7 @@ public:
 	bool IsKeyToggle(VIRTUAL_KEY_INDEX index) const;
 
 	bool IsKeyUp(VIRTUAL_KEY_INDEX index) const;
+	void SetMousePos(float x, float y) const;
 private:
 	const static int KEY_COUNT = 256;
 	const static int PAD_NUM = 4;

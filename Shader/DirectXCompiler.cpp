@@ -53,7 +53,7 @@ MWCptr<IDxcBlob> DirectXCompiler::Compile(const std::wstring& shaderPath, const 
 		MessageBox(nullptr, ("Compiler Error : " + log).data(), "ERROR", MB_OK);
 		return 0;
 	}
-	//D3D12_staet_SUb
+	//D3D12_state_SUb
 	
 
 	MWCptr<IDxcBlob> blob;

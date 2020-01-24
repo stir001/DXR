@@ -21,6 +21,7 @@ RenderResources::RenderResources() : fenceValue(0), fenceEvent(nullptr), hwnd(nu
 
 void RenderResources::Init(HWND hwnd, unsigned int wndWidth, unsigned int wndHeight)
 {
+	this->hwnd = hwnd;
 	size = { wndWidth, wndHeight };
 	InitFactory4();
 	InitDevice();
@@ -115,6 +116,8 @@ void RenderResources::InitShaderPair()
 {
 	rayGenName = L"rayGen";
 	missSets.push_back({ 0, L"miss" });
+	missSets.push_back({ 0, L"transMiss" });
+	missSets.push_back({ 0, L"reflectMiss" });
 }
 
 void RenderResources::InitPipelineState()

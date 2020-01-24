@@ -14,16 +14,37 @@ void DxilLibrarySubobjects::Init()
 {
 	mExportNames.emplace_back(L"rayGen");
 	mExportNames.emplace_back(L"miss");
+	mExportNames.emplace_back(L"transMiss");
+	mExportNames.emplace_back(L"reflectMiss");
 	mExportNames.emplace_back(L"chessChs");
+	mExportNames.emplace_back(L"reflectChs");
+	mExportNames.emplace_back(L"transChs");
+	mExportNames.emplace_back(L"boardTransChs");
+	mExportNames.emplace_back(L"boardRefChs");
+	mExportNames.emplace_back(L"boardChs");
 
 	mExportNames.emplace_back(L"GlobalRootSig");
 	mExportNames.emplace_back(L"RayGenRootSig");
-	mExportNames.emplace_back(L"NormalRootSig");
+	mExportNames.emplace_back(L"ChessRootSig");
 	mExportNames.emplace_back(L"EmptyRootSig");
-	mExportNames.emplace_back(L"NormalHitGroup");
+	mExportNames.emplace_back(L"BoardRootSig");
+
+	mExportNames.emplace_back(L"ChessHitGroup");
+	mExportNames.emplace_back(L"TransHitGroup");
+	mExportNames.emplace_back(L"ReflectHitGroup");
+	mExportNames.emplace_back(L"BoardTransHitGroup");
+	mExportNames.emplace_back(L"BoardRefHitGroup");
+	mExportNames.emplace_back(L"BoardHitGroup");
+
 	mExportNames.emplace_back(L"RayGenAssociation");
 	mExportNames.emplace_back(L"MissAssociation");
-	mExportNames.emplace_back(L"ClosestHitAssociation");
+	mExportNames.emplace_back(L"ChessHitAssociation");
+	mExportNames.emplace_back(L"TransHitAssociation");
+	mExportNames.emplace_back(L"ChessReflectAssociation");
+	mExportNames.emplace_back(L"BoardTransAssociation");
+	mExportNames.emplace_back(L"BoardRefAssociation");
+	mExportNames.emplace_back(L"BoardHitAssociation");
+
 	mExportNames.emplace_back(L"ShaderConfig");
 	mExportNames.emplace_back(L"PipelineConfig");
 
