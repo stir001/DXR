@@ -55,4 +55,12 @@ void GameController::CameraMove()
 	{
 		mCamera->MoveSide(-vel);
 	}
+	if (mInput->IsKeyDown(VIRTUAL_KEY_INDEX::KEY_SHIFT))
+	{
+		mCamera->AddPos(Vector3(0.0f, -vel, 0.0f));
+	}
+	if (mInput->IsKeyDown(VIRTUAL_KEY_INDEX::KEY_SPACE))
+	{
+		mCamera->AddPos(Vector3(0.0f, vel, 0.0f));
+	}
 }

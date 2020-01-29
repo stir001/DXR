@@ -1,5 +1,7 @@
 #define MULTI_GEOMETRY_HIT_GROUP_INDEX (3)
-#define RAY_RECURSIVE_DEPTH (15)
+#define RAY_RECURSIVE_DEPTH (7)
+#define LIGHT_WEIGHT (0.01f)
+#define TMIN_VALUE (0.01f)
 
 GlobalRootSignature GlobalRootSig =
 {
@@ -203,13 +205,15 @@ float3 refractiveRayDir(float refractive, int normalSign)
 	return normalize(mul(float4(rayDir, 1.0f), rotaMat));
 }
 
-float3 lighting(float3 baseColor, float3 normal)
+float3 lighting(float3 baseColor, float3 normal, float lightWeight)
 {
 	float3 light = normalize(float3(-0.5f, -1.0f, 0.5f));
+	float3 refVec = reflect(light, normal);
+	float s = saturate(dot(normalize(camera.pos.xyz - hitPos()), refVec));
 	float3x4 mat = ObjectToWorld3x4();
 	mat._14_24_34 = 0.0f;
 	float cos = abs(dot(-light, mul(mat, float4(normal, 1.0f)).xyz));
-	return saturate(linearToSrgb(baseColor * cos * (cos + 0.01f)) + 0.1f);
+	return saturate(linearToSrgb((baseColor * cos * (cos + 0.01f)) + 0.1f + float3(0.5f,0.5f,0.5f) * pow(s,15))/* * lightWeight*/);
 }
 
 float3 transLighting(float3 baseColor, float alpha, float transColor)
@@ -244,71 +248,70 @@ void rayGen()
 	payload.recursive = 0;
 	payload.normalSign = 1;
 	//AS, RayFlags, InstanceInclusionMask, RayContributionToHitGroupIndex, MultiplierForGeometryContributionToShaderIndex, MissShaderIndex, Ray, PayLoad
-	TraceRay(gRtScene, 0 /*rayFlags*/, 0xFF, 0 /* ray index*/, MULTI_GEOMETRY_HIT_GROUP_INDEX, 0, ray, payload);//ã¸ê‹ópRay
+	TraceRay(gRtScene, 0 /*rayFlags*/, 0xFF, 0 /* ray index*/, MULTI_GEOMETRY_HIT_GROUP_INDEX, 0, ray, payload);
 	float3 col = payload.color;
 	gOutput[launchIndex.xy] = float4(col, 1);
 }
 
+#define MISS_COLOR (float3(1.0f,1.0f,1.0f))
+
 [shader("miss")]
 void miss(inout RayPayload payload)
 {
-	payload.color = float3(0.8f, 0.8f, 0.8f);
+	payload.color = MISS_COLOR;
 }
 
 [shader("miss")]
 void transMiss(inout RayPayload payload)
 {
-	payload.color = float3(0.8f, 0.8f, 0.8f);
+	payload.color = MISS_COLOR;
 }
 
 [shader("miss")]
 void reflectMiss(inout RefPayload payload)
 {
-	payload.color = float3(0.8f, 0.8f, 0.8f);
+	payload.color = MISS_COLOR;
 }
 
 [shader("closesthit")]
 void chessChs(inout RayPayload payload, in BuiltInTriangleIntersectionAttributes attribs)
 {
-	payload.color = transLighting(lighting(chess.color.xyz, normals[PrimitiveIndex()]), chess.color.w, payload.color);
+	payload.color = transLighting(lighting(chess.color.xyz, normals[PrimitiveIndex()] * payload.normalSign, 1.0f - payload.recursive * LIGHT_WEIGHT), chess.color.w, payload.color);
 }
 
 [shader("closesthit")]
 void transChs(inout RayPayload payload, in BuiltInTriangleIntersectionAttributes attribs)
 {
-	RayDesc ray;
-	ray.Origin = hitPos();
-	ray.TMin = 0.001f;
-	ray.TMax = 100000.0f;
 	float3x4 m = ObjectToWorld3x4();
 	m._14_24_34 = 0.0f;
 	float3 n = mul(m, normals[PrimitiveIndex()]) * payload.normalSign;
-	ray.Direction = refract(WorldRayDirection(), n, payload.refractive);
-	//ray.Direction = WorldRayDirection();
-	payload.refractive = 1.0f / payload.refractive;
-
-	float3 refRay = reflect(WorldRayDirection(), normals[PrimitiveIndex()] * payload.normalSign);
-
-	payload.normalSign *= -1;
-	
-	//payload.color = ray.Direction;
-	//payload.color = WorldRayDirection();
-	//payload.color = ray.Origin;
-	//payload.color = normals[PrimitiveIndex()];
-
 	++payload.recursive;
+	RayDesc ray;
+	ray.Origin = hitPos();
+	ray.TMin = TMIN_VALUE;
+	ray.TMax = 100000.0f;
+	float3 worldRay = WorldRayDirection();
+	float3 refRay = reflect(worldRay, normals[PrimitiveIndex()] * payload.normalSign);
+
+	if (dot(n, -worldRay) > 0.1f)
+	{
+		ray.Direction = refract(worldRay, n, payload.refractive);
+		payload.refractive = 1.0f / payload.refractive;
+
+		payload.normalSign *= -1;
+
+		TraceRay(gRtScene, 0, 0xff, (payload.recursive / (RAY_RECURSIVE_DEPTH - 2)) * 2, MULTI_GEOMETRY_HIT_GROUP_INDEX, 1, ray, payload);//ã¸ê‹åı
+		payload.color = transLighting(lighting(chess.color.xyz, normals[PrimitiveIndex()] * payload.normalSign, 1.0f - payload.recursive * LIGHT_WEIGHT), chess.color.w, payload.color);
+	}
 
 	RefPayload refPayload;
 	refPayload.color = payload.color;
 	refPayload.recursive = payload.recursive;
-	refPayload.normalSign = payload.normalSign;
+	refPayload.normalSign = payload.normalSign * -1;
 	refPayload.reflectIndex = 1.0f;
 
-	TraceRay(gRtScene, 0, 0xff, (payload.recursive / (RAY_RECURSIVE_DEPTH - 1)) * 2, MULTI_GEOMETRY_HIT_GROUP_INDEX, 1, ray, payload);//ã¸ê‹åı
-	payload.color = transLighting(lighting(chess.color.xyz, normals[PrimitiveIndex()]), chess.color.w, payload.color);
-
 	ray.Direction = refRay;
-	TraceRay(gRtScene, 0, 0xff, 1, MULTI_GEOMETRY_HIT_GROUP_INDEX, 2, ray, refPayload);//îΩéÀåı
+	TraceRay(gRtScene, 0, 0xff, (payload.recursive / (RAY_RECURSIVE_DEPTH - 2)) * 1 + 1, MULTI_GEOMETRY_HIT_GROUP_INDEX, 2, ray, refPayload);//îΩéÀåı
 	payload.color = payload.color * refPayload.reflectIndex + refPayload.color * (1.0f - refPayload.reflectIndex);
 }
 
@@ -321,12 +324,12 @@ void reflectChs(inout RefPayload payload, in BuiltInTriangleIntersectionAttribut
 	RayDesc ray;
 	ray.Origin = hitPos();
 	ray.Direction = refRay;
-	ray.TMin = 0.001f;
+	ray.TMin = TMIN_VALUE;
 	ray.TMax = 100000.0f;
 
 	++payload.recursive;
-	TraceRay(gRtScene, 0, 0xFF, payload.recursive / (RAY_RECURSIVE_DEPTH - 1), MULTI_GEOMETRY_HIT_GROUP_INDEX, 2, ray, payload);
-	payload.color = lighting(chess.color.xyz, normals[PrimitiveIndex()]) * 0.5f + payload.color * 0.5f;
+	TraceRay(gRtScene, 0, 0xFF, (payload.recursive / (RAY_RECURSIVE_DEPTH - 2)) * 2, MULTI_GEOMETRY_HIT_GROUP_INDEX, 2, ray, payload);
+	payload.color = lighting(chess.color.xyz, normals[PrimitiveIndex()] * payload.normalSign, 1.0f - payload.recursive * LIGHT_WEIGHT) * 0.5f + payload.color * 0.5f;
 	payload.reflectIndex = 0.8f;
 }
 
@@ -340,12 +343,12 @@ void boardTransChs(inout RayPayload payload, in BuiltInTriangleIntersectionAttri
 	RayDesc ray;
 	ray.Origin = hitPos();
 	ray.Direction = refRay;
-	ray.TMin = 0.001f;
+	ray.TMin = TMIN_VALUE;
 	ray.TMax = 100000.0f;
 	++payload.recursive;
-	TraceRay(gRtScene, 0, 0xFF, (payload.recursive / (RAY_RECURSIVE_DEPTH -1)) * 2, MULTI_GEOMETRY_HIT_GROUP_INDEX, 1, ray, payload);
+	TraceRay(gRtScene, 0, 0xFF, (payload.recursive / (RAY_RECURSIVE_DEPTH - 2)) * 2, MULTI_GEOMETRY_HIT_GROUP_INDEX, 1, ray, payload);
 	float reflectIndex = 0.8f;
-	payload.color = lighting(board.color.xyz, n) * reflectIndex + payload.color * (1.0f - reflectIndex);
+	payload.color = lighting(board.color.xyz, n, 1.0f - payload.recursive * LIGHT_WEIGHT) * reflectIndex + payload.color * (1.0f - reflectIndex);
 }
 
 [shader("closesthit")]
@@ -358,18 +361,18 @@ void boardRefChs(inout RefPayload payload, in BuiltInTriangleIntersectionAttribu
 	RayDesc ray;
 	ray.Origin = hitPos();
 	ray.Direction = refRay;
-	ray.TMin = 0.001f;
+	ray.TMin = TMIN_VALUE;
 	ray.TMax = 100000.0f;
 
 	++payload.recursive;
-	TraceRay(gRtScene, 0, 0xFF, (payload.recursive / (RAY_RECURSIVE_DEPTH - 1)), MULTI_GEOMETRY_HIT_GROUP_INDEX, 2, ray, payload);
+	TraceRay(gRtScene, 0, 0xFF, ((payload.recursive + (RAY_RECURSIVE_DEPTH - 2) / 2) / (RAY_RECURSIVE_DEPTH - 2)) * 2, MULTI_GEOMETRY_HIT_GROUP_INDEX, 2, ray, payload);
 	payload.reflectIndex = 0.8f;
-	payload.color = lighting(board.color.xyz, n) * payload.reflectIndex + payload.color * (1.0f - payload.reflectIndex);
+	payload.color = lighting(board.color.xyz, n, 1.0f - payload.recursive * LIGHT_WEIGHT) * payload.reflectIndex + payload.color * (1.0f - payload.reflectIndex);
 }
 
 [shader("closesthit")]
 void boardChs(inout RefPayload payload, in BuiltInTriangleIntersectionAttributes attribs)
 {
 	float3 n = float3(0.0f, 1.0f, 0.0f);
-	payload.color = lighting(board.color.xyz, n);
+	payload.color = lighting(board.color.xyz, n, 1.0f - payload.recursive * LIGHT_WEIGHT);
 }

@@ -48,9 +48,6 @@ void RayTraceRenderer::Init()
 	mCreator = std::make_shared<DrawObjectCreator>(*mResources.heapCSU, mResources.device, mResources.cmdList, mResources.shaderTable);
 
 	//GameObjectInitalize
-	float epsilonY = 0.001f;
-	float moveLength = 3.0f;
-	Vector3 origin = {0.0f, epsilonY, moveLength};
 	const float alpha = 0.4f;
 	Vector4 white = { 1.0f, 1.0f, 1.0f, alpha };
 	Vector4 black = { 0.3f, 0.3f, 0.3f, alpha };
@@ -295,7 +292,7 @@ void RayTraceRenderer::InitChessPos()
 {
 	float boardLength = 3.0f;
 	Vector3 offset = { boardLength, 0.0f, 0.0f };
-	const Vector3 origin = { boardLength * 0.5f, 0.001f, boardLength * 0.5f };
+	const Vector3 origin = { boardLength * 0.5f, 0.011f, boardLength * 0.5f };
 	unsigned int objectOffset = 0;
 	unsigned int linePieceNum = 8;
 

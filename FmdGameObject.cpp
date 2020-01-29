@@ -117,9 +117,10 @@ void FmdGameObject::InitFmd(const Fmd::FMDFileData& data, const MWCptr<ID3D12Dev
 	transInfo.name = L"TransHitGroup";
 	auto hitGroupOffset = shaderTable->AddHitGroupShader(transInfo);
 
-	ShaderTable::ShaderInfo refrecInfo;
-	refrecInfo.heapIndices.push_back(normalHeapIndex);
-	refrecInfo.name = L"ReflectHitGroup";
+	ShaderTable::ShaderInfo reflectInfo;
+	reflectInfo.heapIndices.push_back(normalHeapIndex);
+	reflectInfo.name = L"ReflectHitGroup";
+	shaderTable->AddHitGroupShader(reflectInfo);
 
 	ShaderTable::ShaderInfo info = {};
 	info.heapIndices.push_back(normalHeapIndex);
