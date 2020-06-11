@@ -49,8 +49,8 @@ void RayTraceRenderer::Init()
 
 	//GameObjectInitalize
 	const float alpha = 0.4f;
-	Vector4 white = { 1.0f, 1.0f, 1.0f, alpha };
-	Vector4 black = { 0.3f, 0.3f, 0.3f, alpha };
+	Vector4 white = { 0.0f, 1.0f, 1.0f, alpha };
+	Vector4 black = { 1.0f, 0.0f, 1.0f, alpha };
 	unsigned int objectIndex = 0;
 	mGameObjects.resize(32 + 1);
 	objectIndex = LoadOneSide(mGameObjects, white, objectIndex);
@@ -62,7 +62,6 @@ void RayTraceRenderer::Init()
 	}
 
 	objectIndex = LoadOneSide(mGameObjects, black, objectIndex);
-	InitChessPos();
 
 	mGameObjects[objectIndex++] = (mCreator->CreateChessBoard());
 	auto tlas = mCreator->CreateTLAS();
@@ -209,7 +208,7 @@ void RayTraceRenderer::InitWindow()
 	RECT wrc = { 0,0, WINDOW_WIDTH, WINDOW_HEIGHT };
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 	
-	CHAR name[] = ("Game");
+	CHAR name[] = ("Glass Chess");
 	HINSTANCE hInst = mHInst;
 
 	WNDCLASSEX w = {};
@@ -286,35 +285,6 @@ void RayTraceRenderer::DispatchRays()
 	cmdList->SetComputeRootDescriptorTable(0, mResources.heapCSU->GetGpuHandle(mCreator->GetTLASHeapIndex()));
 	
 	cmdList->DispatchRays(&desc);
-}
-
-void RayTraceRenderer::InitChessPos()
-{
-	float boardLength = 3.0f;
-	Vector3 offset = { boardLength, 0.0f, 0.0f };
-	const Vector3 origin = { boardLength * 0.5f, 0.011f, boardLength * 0.5f };
-	unsigned int objectOffset = 0;
-	unsigned int linePieceNum = 8;
-
-	Vector3 leftFront = Vector3(boardLength * -4.0f, 0.0f, boardLength * 3.0f) + origin;
-	SetPosLine(mGameObjects, leftFront, offset, objectOffset);
-	objectOffset += linePieceNum;
-	SetPosLine(mGameObjects, leftFront + Vector3(0.0f, 0.0f, -boardLength), offset, objectOffset);
-	objectOffset += linePieceNum;
-
-	Vector3 leftBack = Vector3(boardLength * -4.0f, 0.0f, boardLength * -4.0f) + origin;
-	SetPosLine(mGameObjects, leftBack, offset, objectOffset);
-	objectOffset += linePieceNum;
-	SetPosLine(mGameObjects, leftBack + Vector3(0.0f, 0.0f, boardLength), offset, objectOffset);
-}
-
-void RayTraceRenderer::SetPosLine(std::vector<std::shared_ptr<GameObject>>& objects, const Vector3& basePos, const Vector3& offset, const unsigned int baseIndex)
-{
-	const unsigned int linePieceNum = 8;
-	for (unsigned int i = 0; i < linePieceNum; ++i)
-	{
-		mGameObjects[baseIndex + i]->SetPos(basePos + offset * i);
-	}
 }
 
 unsigned int RayTraceRenderer::LoadColor8Powns(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset)

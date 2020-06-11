@@ -18,7 +18,8 @@ public:
 	unsigned int GetCameraHeapIndex() const;
 	void MoveFront(float val);
 	void MoveSide(float val);
-
+	Vector3 Direction(const Vector2& screenPos);//スクリーン座標から方向を計算する
+	Vector3 GetPos() const;
 private:
 	void Init(const MWCptr<ID3D12Device5>& device, D3DDescriptorHeap& heap);
 	void CalculateViewProj();

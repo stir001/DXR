@@ -81,7 +81,7 @@ void ChessBoard::CreateChessBoard(const MWCptr<ID3D12Device5>& device, const MWC
 	};
 
 	mBlackMaterial = d3d_create_helper::CreateBuffer(device, bufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, d3d_create_helper::GetUploadHeapProps());
-	auto blackHeapIndex = AddHeapColorCBV(mBlackMaterial, Vector3(0.0f, 0.0f, 0.0f), heap, bufferSize);
+	auto blackHeapIndex = AddHeapColorCBV(mBlackMaterial, Vector3(0.01f, 0.01f, 0.01f), heap, bufferSize);
 
 	ShaderTable::ShaderInfo whiteinfo = {};
 	whiteinfo.heapIndices.push_back(whiteHeapIndex);

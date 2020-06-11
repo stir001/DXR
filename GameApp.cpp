@@ -29,7 +29,6 @@ void GameApp::Init(HINSTANCE hInst)
 	mRenderer = std::make_unique<RayTraceRenderer>(hInst);
 	auto size = mRenderer->GetWindowSize();
 	mController = std::make_shared<GameController>(mRenderer->CreateDxInput(), mRenderer->GetCamera(), mRenderer->GetGameObjects(), Vector2(size.width, size.height));
-
 }
 
 void GameApp::Run()

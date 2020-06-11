@@ -40,6 +40,18 @@
     <Filter Include="ヘッダー ファイル\GameObject">
       <UniqueIdentifier>{384ba76d-6c33-46c7-b7de-4230f0cfad23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Chess">
+      <UniqueIdentifier>{fd92265b-eab9-4599-b3ca-c24a300ee380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Chess">
+      <UniqueIdentifier>{cfd776ca-5839-4a45-80a8-8f1e855c6c38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Chess\Piece">
+      <UniqueIdentifier>{0569432b-7c74-4b4b-b58d-e3a11e956368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Chess\Piece">
+      <UniqueIdentifier>{13da67d2-c7db-4356-912a-1548d68bb108}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -148,6 +160,36 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ChessBoard.cpp">
+      <Filter>ソース ファイル\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGame.cpp">
+      <Filter>ソース ファイル\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="BishopPiece.cpp">
+      <Filter>ソース ファイル\Chess\Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="KingPiece.cpp">
+      <Filter>ソース ファイル\Chess\Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightPiece.cpp">
+      <Filter>ソース ファイル\Chess\Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="PownPiece.cpp">
+      <Filter>ソース ファイル\Chess\Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="QueenPiece.cpp">
+      <Filter>ソース ファイル\Chess\Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="RookPiece.cpp">
+      <Filter>ソース ファイル\Chess\Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessPiece.cpp">
+      <Filter>ソース ファイル\Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeMap.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -258,6 +300,36 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="ChessBoard.h">
+      <Filter>ヘッダー ファイル\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGame.h">
+      <Filter>ヘッダー ファイル\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="BishopPiece.h">
+      <Filter>ヘッダー ファイル\Chess\Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="KingPiece.h">
+      <Filter>ヘッダー ファイル\Chess\Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="KnightPiece.h">
+      <Filter>ヘッダー ファイル\Chess\Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="PownPiece.h">
+      <Filter>ヘッダー ファイル\Chess\Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="QueenPiece.h">
+      <Filter>ヘッダー ファイル\Chess\Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="RookPiece.h">
+      <Filter>ヘッダー ファイル\Chess\Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessPiece.h">
+      <Filter>ヘッダー ファイル\Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeMap.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

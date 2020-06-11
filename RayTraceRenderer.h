@@ -60,8 +60,6 @@ private:
 	void ResetCommandList();
 	void SwapChainPresent();
 	void DispatchRays();
-	void InitChessPos();
-	void SetPosLine(std::vector<std::shared_ptr<GameObject>>& objects, const Vector3& basePos, const Vector3& offset, const unsigned int baseIndex);
 	unsigned int LoadColor8Powns(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset);//indexOffsetにロードした分を追加した数字を返す(+8)
 	unsigned int LoadConstantPieces(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset, bool reverse = false);//indexOffsetにロードした分を追加した数字を返す(+3)
 	unsigned int LoadOneSide(std::vector<std::shared_ptr<GameObject>>& objects, const Vector4& color, unsigned int indexOffset);

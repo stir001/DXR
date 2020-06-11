@@ -21,11 +21,13 @@ class GameObject
 {
 public:
 	GameObject(std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs);
+	virtual ~GameObject();
 	const AccelerationStructure::ASBuffer& GetBLAS() const;
 	virtual void SetPos(const Vector3& pos);
 	virtual void AddPos(const Vector3& val);
 	virtual void AddRotaY(const float rad);
 	virtual void AddRotaZ(const float rad);
+	virtual Vector3 GetPos() const;
 protected:
 	virtual void UpdateMatrix();
 	virtual void CreateInstanceDesc(std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDescs, unsigned int hitGroupIndex);

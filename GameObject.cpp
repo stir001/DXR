@@ -10,6 +10,10 @@ GameObject::GameObject(std::vector<D3D12_RAYTRACING_INSTANCE_DESC>& instanceDesc
 {
 }
 
+GameObject::~GameObject()
+{
+}
+
 const AccelerationStructure::ASBuffer& GameObject::GetBLAS() const
 {
 	return mBLAS;
@@ -45,6 +49,11 @@ void GameObject::AddRotaZ(const float rad)
 	m = mat;
 	mMat *= Matrix::Transpose(m);
 	UpdateMatrix();
+}
+
+Vector3 GameObject::GetPos() const
+{
+	return Vector3(mMat._03, mMat._13, mMat._23);
 }
 
 void GameObject::UpdateMatrix()

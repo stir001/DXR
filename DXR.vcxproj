@@ -87,12 +87,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Helper\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Helper\;$(DIRECTXTEX_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>dxgi.lib;d3d12.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d12.lib;xinput.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DIRECTXTEX_LIB)\x64\debug;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,20 +120,25 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Helper\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Helper\;$(DIRECTXTEX_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>dxgi.lib;d3d12.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d12.lib;xinput.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DIRECTXTEX_LIB)\x64\release;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AccelerationStructure\AccelerationStructure.cpp" />
+    <ClCompile Include="BishopPiece.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ChessBoard.cpp" />
+    <ClCompile Include="ChessGame.cpp" />
+    <ClCompile Include="ChessPiece.cpp" />
+    <ClCompile Include="CubeMap.cpp" />
     <ClCompile Include="D3DDescriptorHeap.cpp" />
     <ClCompile Include="D3DHeplerFunction.cpp" />
     <ClCompile Include="D3DResource.cpp" />
@@ -147,9 +154,14 @@
     <ClCompile Include="Helper\CharConvert.cpp" />
     <ClCompile Include="Helper\D3DCreateHelper.cpp" />
     <ClCompile Include="InstanceCreator.cpp" />
+    <ClCompile Include="KingPiece.cpp" />
+    <ClCompile Include="KnightPiece.cpp" />
     <ClCompile Include="PipelineState\RtPipelineState.cpp" />
+    <ClCompile Include="PownPiece.cpp" />
+    <ClCompile Include="QueenPiece.cpp" />
     <ClCompile Include="RayTraceRenderer.cpp" />
     <ClCompile Include="RenderResources.cpp" />
+    <ClCompile Include="RookPiece.cpp" />
     <ClCompile Include="RootSignatureDescBundle.cpp" />
     <ClCompile Include="Shader\DirectXCompiler.cpp" />
     <ClCompile Include="Shader\DxilEntryPoints.cpp" />
@@ -165,6 +177,7 @@
     <ClCompile Include="SubObjects\SubObject.cpp" />
     <ClCompile Include="SubObjects\SubObjectsCreate.cpp" />
     <ClCompile Include="Mathatic.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="hlsl\RGShader.hlsl">
@@ -182,8 +195,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AccelerationStructure\AccelerationStructure.h" />
+    <ClInclude Include="BishopPiece.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChessBoard.h" />
+    <ClInclude Include="ChessGame.h" />
+    <ClInclude Include="ChessPiece.h" />
+    <ClInclude Include="CubeMap.h" />
     <ClInclude Include="D3DDescriptorHeap.h" />
     <ClInclude Include="D3DHeplerFunction.h" />
     <ClInclude Include="D3DResource.h" />
@@ -200,9 +217,14 @@
     <ClInclude Include="Helper\Comptr.h" />
     <ClInclude Include="Helper\D3DCreateHelper.h" />
     <ClInclude Include="InstanceCreator.h" />
+    <ClInclude Include="KingPiece.h" />
+    <ClInclude Include="KnightPiece.h" />
     <ClInclude Include="PipelineState\RtPipelineState.h" />
+    <ClInclude Include="PownPiece.h" />
+    <ClInclude Include="QueenPiece.h" />
     <ClInclude Include="RayTraceRenderer.h" />
     <ClInclude Include="RenderResources.h" />
+    <ClInclude Include="RookPiece.h" />
     <ClInclude Include="RootSignatureDescBundle.h" />
     <ClInclude Include="Shader\DirectXCompiler.h" />
     <ClInclude Include="Shader\DxilEntryPoints.h" />
@@ -217,6 +239,7 @@
     <ClInclude Include="SubObjects\SubObject.h" />
     <ClInclude Include="SubObjects\SubObjectsCreate.h" />
     <ClInclude Include="Mathatic.h" />
+    <ClInclude Include="TextureLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -70,6 +70,17 @@ void Camera::MoveSide(float val)
 	AddPos(side * val);
 }
 
+Vector3 Camera::Direction(const Vector2& screenPos)
+{
+	auto pos = mBuffer.inverseViewProj * Vector4(screenPos.x, screenPos.y, 1.0f, 1.0f);
+	return Vector3::Normalize(Vector3(pos.x, pos.y, pos.z) - Vector3(mBuffer.pos.x, mBuffer.pos.y, mBuffer.pos.z));
+}
+
+Vector3 Camera::GetPos() const
+{
+	return Vector3(mBuffer.pos.x, mBuffer.pos.y, mBuffer.pos.z);
+}
+
 void Camera::Init(const MWCptr<ID3D12Device5>& device, D3DDescriptorHeap& heap)
 {
 	auto bufferSize = d3d_create_helper::Alignment(256, sizeof(mBuffer));
